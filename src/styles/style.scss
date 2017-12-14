@@ -1,0 +1,32 @@
+@import '~bootstrap/dist/css/bootstrap.css';
+
+.form-signin{
+	max-width: 350px;
+    padding: 15px;
+    margin: 0 auto;
+    input[type="password"], input[type="text"]{
+    	margin-bottom: 10px;
+    }
+    .checkbox{
+    	font-weight: 400;
+    	margin-left: 20px;
+    }
+    button{
+    	margin-bottom: 10px;
+    }
+    a{
+    	font-weight: 400;
+    }
+    
+}
+.forgot-password{
+	max-width: 350px;
+    padding: 15px;
+    margin: 0 auto;
+    input[type="password"], input[type="text"]{
+    	margin-bottom: 10px;
+    }
+    button{
+    	margin-bottom: 10px;
+    }
+}
