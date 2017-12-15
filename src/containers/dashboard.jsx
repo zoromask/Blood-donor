@@ -35,12 +35,16 @@ export class Dashboard extends Component {
 			firebase.auth().onAuthStateChanged(function (user) {
 				if (user) {
 					me.setState({
-						login: true
+						login: true,
+						currentUser: {
+							displayName: user.displayName,
+						},
 					});
 					console.log('login');
 				} else {
 					me.setState({
-						login: false
+						login: false,
+						currentUser: null
 					});
 					console.log("signout");
 				};
@@ -131,7 +135,7 @@ export class Dashboard extends Component {
 						/>
 					</Tab>
 					<Tab tabName={'Information'} linkClassName={'link-class-1'}>
-						<InformationTab />
+						<InformationTab currentUser={this.state.currentUser} />
 					</Tab>
 				</Tabs>);
 		}
