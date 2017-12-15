@@ -81,13 +81,17 @@ export class Dashboard extends Component {
 		}
 	}
 
+	logoutButton (loggedIn) {
+		if(loggedIn)
+		return (<span className="btn-logout" onClick={this.logout}> Logout </span>);
+	}
 
 	render() {
 		return (
 			<div className="dashboard-container">
 				<div className="topbar">
 					<span>Blood Donor Finder</span>
-					<span className="btn-logout" onClick={this.logout}> Logout </span>
+					{this.logoutButton(this.state.login)}
 				</div>
 				<div className="left-panel">
 					{this.statusTab(this.state.login)}
