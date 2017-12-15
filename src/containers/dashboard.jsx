@@ -40,13 +40,11 @@ export class Dashboard extends Component {
 							displayName: user.displayName,
 						},
 					});
-					console.log('login');
 				} else {
 					me.setState({
 						login: false,
 						currentUser: null
 					});
-					console.log("signout");
 				};
 			});
 		}, 1000);
@@ -115,7 +113,6 @@ export class Dashboard extends Component {
 			return (
 				<div className="load-wrapp">
 					<div className="load-5">
-						<p>Loading 5</p>
 						<div className="ring-2">
 							<div className="ball-holder">
 								<div className="ball"></div>
