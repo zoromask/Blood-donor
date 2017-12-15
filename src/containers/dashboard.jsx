@@ -1,10 +1,14 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Tabs from '../components/Tabs.jsx';
 import Tab from '../components/Tab.jsx';
 import FilterTab from '../components/FilterTab.jsx';
 import InformationTab from '../components/InformationTab.jsx';
 import {Gmaps, Marker, InfoWindow, Circle} from 'react-gmaps';
+import InfoTab from '../components/SignupTab.jsx';
+import { Gmaps, Marker, InfoWindow, Circle } from 'react-gmaps';
 import axios from 'axios';
+import fire from '../utility/firebase';
+import firebase from 'firebase';
 
 export class Dashboard extends Component {
 
@@ -12,17 +16,35 @@ export class Dashboard extends Component {
 		super(props, context);
 		this.state = {
 			coords: {
-			  lat: 51.5258541,
-			  lng: -0.08040660000006028
+				lat: 51.5258541,
+				lng: -0.08040660000006028
 			},
 			mapKey: {
 				v: '3.exp',
 				key: 'YOUR_API_KEY'
 			},
-			radius: 0
+			radius: 0,
+			login: false
 		}
 		this.filterAddress = this.filterAddress.bind(this);
 		this.filterRadius = this.filterRadius.bind(this);
+	}
+
+	componentWillMount() {
+		var me = this;
+		firebase.auth().onAuthStateChanged(function (user) {
+			if (user) {
+				me.setState({
+					login: true
+				});
+				console.log('login');
+			} else {
+				me.setState({
+					login: false
+				});
+				console.log("signout");
+			};
+		});
 	}
 
 	onMapCreated(map) {
@@ -76,11 +98,35 @@ export class Dashboard extends Component {
 		// });
 	}
 
+	logout() {
+		firebase.auth().signOut();
+	}
+
+	statusTab(props) {
+		const isLoggedIn = props;
+		if (isLoggedIn) {
+			return (
+				<Tabs defaultActiveTabIndex={0}>
+					<Tab tabName={'Filter'} linkClassName={'link-class-0'}>
+						<FilterTab />
+					</Tab>
+					<Tab tabName={'Information'} linkClassName={'link-class-1'}>
+						<p> Content 1</p>
+					</Tab>
+				</Tabs>);
+		}
+		else {
+			return <InfoTab />;
+		}
+	}
+
+
 	render() {
 		return (
 			<div className="dashboard-container">
 				<div className="topbar">
 					<span>Blood Donor Finder</span>
+					<span className="btn-logout" onClick={this.logout}> Logout </span>
 				</div>
 				<div className="left-panel">
 					<Tabs defaultActiveTabIndex={0}>
@@ -94,6 +140,7 @@ export class Dashboard extends Component {
 							<InformationTab />
 						</Tab>
 					</Tabs>
+					{this.statusTab(this.state.login)}
 				</div>
 				<div className="right-panel">
 					<Gmaps
@@ -125,5 +172,7 @@ export class Dashboard extends Component {
 		)
 	}
 };
+
+
 
 export default Dashboard;
