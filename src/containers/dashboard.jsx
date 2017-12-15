@@ -20,25 +20,27 @@ export class Dashboard extends Component {
 				v: '3.exp',
 				key: 'YOUR_API_KEY'
 			},
-			login: false
+			login: null
 		}
 	}
 
 	componentWillMount() {
 		var me = this;
-		firebase.auth().onAuthStateChanged(function (user) {
-			if (user) {
-				me.setState({
-					login: true
-				});
-				console.log('login');
-			} else {
-				me.setState({
-					login: false
-				});
-				console.log("signout");
-			};
-		});
+		setTimeout(() => {
+			firebase.auth().onAuthStateChanged(function (user) {
+				if (user) {
+					me.setState({
+						login: true
+					});
+					console.log('login');
+				} else {
+					me.setState({
+						login: false
+					});
+					console.log("signout");
+				};
+			});
+		}, 1000);
 	}
 
 	onMapCreated(map) {
@@ -65,7 +67,21 @@ export class Dashboard extends Component {
 
 	statusTab(props) {
 		const isLoggedIn = props;
-		if (isLoggedIn) {
+		if (isLoggedIn === null) {
+			return (
+				<div className="load-wrapp">
+					<div className="load-5">
+						<p>Loading 5</p>
+						<div className="ring-2">
+							<div className="ball-holder">
+								<div className="ball"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			);
+		}
+		else if (isLoggedIn) {
 			return (
 				<Tabs defaultActiveTabIndex={0}>
 					<Tab tabName={'Filter'} linkClassName={'link-class-0'}>
@@ -81,9 +97,9 @@ export class Dashboard extends Component {
 		}
 	}
 
-	logoutButton (loggedIn) {
-		if(loggedIn)
-		return (<span className="btn-logout" onClick={this.logout}> Logout </span>);
+	logoutButton(loggedIn) {
+		if (loggedIn)
+			return (<span className="btn-logout" onClick={this.logout}> Logout </span>);
 	}
 
 	render() {
