@@ -31,7 +31,6 @@ class InformationTab extends Component{
                     <div className="infoTab-field-item">
                         <label className="field-title"> Blood type </label>
                         <select id="blood-type" className ="text-field">
-                        <option selected disabled>Select</option>
                         <option value="A">A</option>
                         <option value="B">B</option>
                         <option value="AB">AB</option>

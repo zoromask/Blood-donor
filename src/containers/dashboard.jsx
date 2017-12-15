@@ -18,9 +18,11 @@ export class Dashboard extends Component {
 			mapKey: {
 				v: '3.exp',
 				key: 'YOUR_API_KEY'
-			}
+			},
+			radius: 0
 		}
 		this.filterAddress = this.filterAddress.bind(this);
+		this.filterRadius = this.filterRadius.bind(this);
 	}
 
 	onMapCreated(map) {
@@ -41,21 +43,37 @@ export class Dashboard extends Component {
 		console.log('onClick', e);
 	}
 
+	/** HANDLE FILTER AUTOMATICALLY **/
 	filterAddress(address) {
 		var {coords} = this.state;
-		axios.get('http://maps.googleapis.com/maps/api/geocode/json?address='+address)
-			.then((res) => {
-				var { results } = res.data;
-				if(results[0]) {
-					this.setState({coords: {
-						...coords,
-						lat: results[0].geometry.location.lat, 
-						lng: results[0].geometry.location.lng}
-					});
-				}
-			}).catch((err) => {
-				console.log(err);
-			});
+		if(address != '') {
+			axios.get('http://maps.googleapis.com/maps/api/geocode/json?address='+address)
+				.then((res) => {
+					var { results } = res.data;
+					if(results[0]) {
+						this.setState({coords: {
+							...coords,
+							lat: results[0].geometry.location.lat, 
+							lng: results[0].geometry.location.lng}
+						});
+					}
+				}).catch((err) => {
+					console.log(err);
+				});
+		}
+	}
+	filterRadius(radius) {	//Unit: meter
+		var {lat,lng} = this.state.coords;
+		radius = parseInt(radius) * 100;
+		this.setState({radius: radius});
+		// axios.request({
+		// 	url: 'https://maps.googleapis.com/maps/api/place/textsearch/json?location='+lat+','+lng+'&radius='+radius,
+		// 	method: 'get',
+		// 	// `headers` are custom headers to be sent
+  		// 	headers: {'X-Requested-With': 'XMLHttpRequest'},
+		// }).then((res) => {}).catch((err) => {
+		// 	console.log(err);
+		// });
 	}
 
 	render() {
@@ -69,6 +87,7 @@ export class Dashboard extends Component {
 						<Tab tabName={'Filter'} linkClassName={'link-class-0'}>
 							<FilterTab
 								filterAddress={this.filterAddress}
+								filterRadius={this.filterRadius}
 							/>
 						</Tab>
 						<Tab tabName={'Information'} linkClassName={'link-class-1'}>
@@ -93,6 +112,12 @@ export class Dashboard extends Component {
 							lng={this.state.coords.lng}
 							draggable={true}
 							onDragEnd={this.onDragEnd}
+							onClick={this.onClick} />
+
+						<Circle
+							lat={this.state.coords.lat}
+							lng={this.state.coords.lng}
+							radius={this.state.radius}
 							onClick={this.onClick} />
 					</Gmaps>
 				</div>

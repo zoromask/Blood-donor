@@ -43,7 +43,7 @@ class FilterTab extends Component{
         document.getElementById('addressInput').addEventListener('input', debounce((e) => {
             this.setState({inputs: {...inputs, address: e.target.value}});
             this.props.filterAddress(e.target.value);
-        }, 250));
+        }, 300));
     }
 
     //Create range sliders
@@ -66,8 +66,8 @@ class FilterTab extends Component{
 
         var radiusSlider = document.getElementById('radiusRange');        
         noUiSlider.create(radiusSlider, {
-            start: [0, 10],
-            connect: true,
+            start: [0],
+            connect: [true, false],
             step: 1,
             range: {
                 min: 0,
@@ -75,9 +75,11 @@ class FilterTab extends Component{
             },
             format: this.formatRange()
         })
-        radiusSlider.noUiSlider.on('update', function(values, handle){
+        radiusSlider.noUiSlider.on('update', (values, handle) => {
             var radiusText = document.getElementById('radiusText');
-            radiusText.innerHTML = radiusSlider.noUiSlider.get()[0] + ' - ' + radiusSlider.noUiSlider.get()[1];
+            var value = radiusSlider.noUiSlider.get();
+            radiusText.innerHTML = value;
+            this.props.filterRadius(value);
         });
     }
     formatRange() {
@@ -117,7 +119,7 @@ class FilterTab extends Component{
                 </div>
 
                 <div className="infoTab-field-item filter-range">
-                    <div><label className="field-title">Radius: </label><span id="radiusText"></span></div>
+                    <div><label className="field-title">Radius: </label><span id="radiusText"></span> (km)</div>
                     <div id="radiusRange"></div>
                 </div>
 
