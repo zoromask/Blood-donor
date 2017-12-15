@@ -34,8 +34,15 @@ export class Tabs extends Component {
         const {children} = this.props;
         const {activeTabIndex} = this.state;
         if(children[activeTabIndex]) {
-            return children[activeTabIndex].props.children;
+            return React.cloneElement(children[activeTabIndex].props.children, {
+                submitData: this.submitData
+            });
         }
+    }
+
+    //submit filtering/adding data
+    submitData(data) {
+        console.log(data);
     }
   
     render() {

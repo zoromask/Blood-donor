@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Tabs from '../components/Tabs.jsx';
 import Tab from '../components/Tab.jsx';
+import FilterTab from '../components/FilterTab.jsx';
 import {Gmaps, Marker, InfoWindow, Circle} from 'react-gmaps';
 
 export class Dashboard extends Component {
@@ -46,10 +47,10 @@ export class Dashboard extends Component {
 				<div className="left-panel">
 					<Tabs defaultActiveTabIndex={0}>
 						<Tab tabName={'Filter'} linkClassName={'link-class-0'}>
-							<p>content 0</p>
+							<FilterTab />
 						</Tab>
 						<Tab tabName={'Information'} linkClassName={'link-class-1'}>
-							
+							<p>content 1</p>
 						</Tab>
 					</Tabs>
 				</div>
