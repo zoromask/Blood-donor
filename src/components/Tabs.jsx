@@ -9,6 +9,7 @@ export class Tabs extends Component {
             activeTabIndex: this.props.defaultActiveTabIndex
         };
         this.handleTabClick = this.handleTabClick.bind(this);
+        this.debounce = this.debounce.bind(this);
     }
   
     // Toggle currently active tab
@@ -35,10 +36,30 @@ export class Tabs extends Component {
         const {activeTabIndex} = this.state;
         if(children[activeTabIndex]) {
             return React.cloneElement(children[activeTabIndex].props.children, {
-                submitData: this.submitData
+                submitData: this.submitData,
+                debounce: this.debounce
             });
         }
     }
+
+    // Returns a function, that, as long as it continues to be invoked, will not
+    // be triggered. The function will be called after it stops being called for
+    // N milliseconds. If `immediate` is passed, trigger the function on the
+    // leading edge, instead of the trailing.
+    debounce(func, wait, immediate) {
+        var timeout;
+        return function() {
+            var context = this, args = arguments;
+            var later = function() {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            var callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    };
 
     //submit filtering/adding data
     submitData(data) {

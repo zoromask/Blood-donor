@@ -4,6 +4,7 @@ import Tab from '../components/Tab.jsx';
 import FilterTab from '../components/FilterTab.jsx';
 import InformationTab from '../components/InformationTab.jsx';
 import {Gmaps, Marker, InfoWindow, Circle} from 'react-gmaps';
+import axios from 'axios';
 
 export class Dashboard extends Component {
 
@@ -19,6 +20,7 @@ export class Dashboard extends Component {
 				key: 'YOUR_API_KEY'
 			}
 		}
+		this.filterAddress = this.filterAddress.bind(this);
 	}
 
 	onMapCreated(map) {
@@ -39,6 +41,23 @@ export class Dashboard extends Component {
 		console.log('onClick', e);
 	}
 
+	filterAddress(address) {
+		var {coords} = this.state;
+		axios.get('http://maps.googleapis.com/maps/api/geocode/json?address='+address)
+			.then((res) => {
+				var { results } = res.data;
+				if(results[0]) {
+					this.setState({coords: {
+						...coords,
+						lat: results[0].geometry.location.lat, 
+						lng: results[0].geometry.location.lng}
+					});
+				}
+			}).catch((err) => {
+				console.log(err);
+			});
+	}
+
 	render() {
 		return (
 			<div className="dashboard-container">
@@ -48,7 +67,9 @@ export class Dashboard extends Component {
 				<div className="left-panel">
 					<Tabs defaultActiveTabIndex={0}>
 						<Tab tabName={'Filter'} linkClassName={'link-class-0'}>
-							<FilterTab />
+							<FilterTab
+								filterAddress={this.filterAddress}
+							/>
 						</Tab>
 						<Tab tabName={'Information'} linkClassName={'link-class-1'}>
 							<InformationTab />

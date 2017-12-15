@@ -12,9 +12,42 @@ class FilterTab extends Component{
         }
         this.handleInputs = this.handleInputs.bind(this);
         this.formatRange = this.formatRange.bind(this);
+        this.addressOnChange = this.addressOnChange.bind(this);
+        this.bloodyTypeOnChange = this.bloodyTypeOnChange.bind(this);
     }
 
     componentDidMount() {
+        this.initializeRangeSlider();
+        this.addressOnChange();
+    }
+
+    //Click 'Search' button
+    handleInputs(e) {
+        var data = {...this.state.inputs, radius: '', age: ''};
+        var ageSlider = document.getElementById('ageRange');
+        var radiusSlider = document.getElementById('radiusRange');
+        data.ages = ageSlider.noUiSlider.get();
+        data.radius = radiusSlider.noUiSlider.get();
+        this.props.submitData(data);
+    }
+
+    //Bloody Type on change
+    bloodyTypeOnChange(e) {
+        var { inputs } = this.state;
+        this.setState({inputs: {...inputs, bloodType: e.target.value}});
+    }
+    //Address on change
+    addressOnChange() {
+        var { inputs } = this.state;
+        var { debounce, filterAddress } = this.props;
+        document.getElementById('addressInput').addEventListener('input', debounce((e) => {
+            this.setState({inputs: {...inputs, address: e.target.value}});
+            this.props.filterAddress(e.target.value);
+        }, 250));
+    }
+
+    //Create range sliders
+    initializeRangeSlider() {
         var ageSlider = document.getElementById('ageRange');
         noUiSlider.create(ageSlider, {
             start: [10, 50],
@@ -47,16 +80,6 @@ class FilterTab extends Component{
             radiusText.innerHTML = radiusSlider.noUiSlider.get()[0] + ' - ' + radiusSlider.noUiSlider.get()[1];
         });
     }
-
-    handleInputs(e) {
-        var data = {...this.state.inputs, radius: '', age: ''};
-        var ageSlider = document.getElementById('ageRange');
-        var radiusSlider = document.getElementById('radiusRange');
-        data.ages = ageSlider.noUiSlider.get();
-        data.radius = radiusSlider.noUiSlider.get();
-        this.props.submitData(data);
-    }
-
     formatRange() {
         return {
             from: function(value) {
@@ -69,14 +92,13 @@ class FilterTab extends Component{
     }
 
     render() {
-        var { inputs } = this.state;
+        var {debounce} = this.props;
         return (
             <div className="filter-wrapper infoTab">
                 <div className="infoTab-field-item">
                     <label className="field-title">Blood Type: </label>
                     <select name="bloodtype" className="blood-type-selectbox text-field"
-                        onChange={(e) => this.setState({inputs: {...inputs, bloodType: e.target.value}})}>
-                        <option selected disabled>Type</option>
+                        onChange={(e) => this.bloodyTypeOnChange(e)}>
                         <option value="A">A</option>
                         <option value="B">B</option>
                         <option value="AB">AB</option>
@@ -86,8 +108,7 @@ class FilterTab extends Component{
 
                 <div className="infoTab-field-item">
                     <label className="field-title">Address: </label >
-                    <input type="text" name="address" className="text-field" required
-                        onChange={(e) => this.setState({inputs: {...inputs, address: e.target.value}})}/>
+                    <input id="addressInput" type="text" name="address" className="text-field" required/>
                 </div>
 
                 <div className="infoTab-field-item filter-range">
