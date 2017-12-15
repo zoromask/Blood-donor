@@ -1504,7 +1504,7 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-create-react-class@^15.6.0:
+create-react-class@^15.5.2, create-react-class@^15.6.0:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.2.tgz#cf1ed15f12aad7f14ef5f2dfe05e6c42f91ef02a"
   dependencies:
@@ -5199,6 +5199,13 @@ react-event-listener@^0.5.1:
     fbjs "^0.8.16"
     prop-types "^15.6.0"
     warning "^3.0.0"
+
+react-gmaps@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/react-gmaps/-/react-gmaps-1.7.0.tgz#644bc0fc61e303d82af9ac62c953eecc487ee363"
+  dependencies:
+    create-react-class "^15.5.2"
+    object-assign "^4.0.1"
 
 react-overlays@^0.7.4:
   version "0.7.4"

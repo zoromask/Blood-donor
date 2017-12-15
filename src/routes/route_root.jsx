@@ -11,21 +11,21 @@ import {
 } from 'react-router-dom'
 
 const routes = [
-	{
-		path: '/login',
-		component: asyncComponent(() => System.import('../containers/login.jsx')
-  			.then(module => module.default), { name: 'login' })
-	},
-	{
-		path: '/register',
-		component: asyncComponent(() => System.import('../containers/register.jsx')
-  			.then(module => module.default), { name: 'register' })
-	},
-	{
-		path: '/forgot-password',
-		component: asyncComponent(() => System.import('../containers/forgot_password.jsx')
-  			.then(module => module.default), { name: 'forgot password' })
-	},
+	// {
+	// 	path: '/login',
+	// 	component: asyncComponent(() => System.import('../containers/login.jsx')
+ //  			.then(module => module.default), { name: 'login' })
+	// },
+	// {
+	// 	path: '/register',
+	// 	component: asyncComponent(() => System.import('../containers/register.jsx')
+ //  			.then(module => module.default), { name: 'register' })
+	// },
+	// {
+	// 	path: '/forgot-password',
+	// 	component: asyncComponent(() => System.import('../containers/forgot_password.jsx')
+ //  			.then(module => module.default), { name: 'forgot password' })
+	// },
 	{
 		path: '/',
 		component: App,
@@ -33,13 +33,10 @@ const routes = [
 			{
 				path: '/',
 				exact: true,
-				component: asyncComponent(() => System.import('../containers/dashboard.jsx')
-  					.then(module => module.default), { name: 'forgot password' })
-			},
-			{
-				path: '/dashboard',
-				component: asyncComponent(() => System.import('../containers/dashboard.jsx')
-  					.then(module => module.default), { name: 'forgot password' })
+				component: asyncComponent(
+					() => System.import('../containers/dashboard.jsx').then(module => module.default),
+					{ name: 'index' }
+				)
 			}
 		]
 

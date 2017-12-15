@@ -1,32 +1,49 @@
 @import '~bootstrap/dist/css/bootstrap.css';
-
-.form-signin{
-	max-width: 350px;
-    padding: 15px;
-    margin: 0 auto;
-    input[type="password"], input[type="text"]{
-    	margin-bottom: 10px;
-    }
-    .checkbox{
-    	font-weight: 400;
-    	margin-left: 20px;
-    }
-    button{
-    	margin-bottom: 10px;
-    }
-    a{
-    	font-weight: 400;
-    }
-    
+html, body {
+    height: 100%;
+    width: 100%;
 }
-.forgot-password{
-	max-width: 350px;
-    padding: 15px;
-    margin: 0 auto;
-    input[type="password"], input[type="text"]{
-    	margin-bottom: 10px;
+#root {
+    height: 100%;
+    width: 100%;
+}
+.container,
+.dashboard-container {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+
+    .topbar {
+        width: 100%;
+        height: 50px;
+        background-color: #bc173b;
+        color: white;
+        font-size: 25px;
+        line-height: 50px;
+
+        span {
+            padding-left: 20px;
+        }
     }
-    button{
-    	margin-bottom: 10px;
+    .left-panel {
+        float: left;
+        height: calc(100% - 50px);
+        width: 300px;
+
+        .tabs {
+            padding: 5px 10px;
+            height: 100%;
+
+            .tabs-active-content {
+                height: calc(100% - 42px);
+                border: 1px solid #ddd;
+                border-top: 0;
+            }
+        }
+    }
+    .right-panel {
+        float: right;
+        height: calc(100% - 50px);
+        width: calc(100% -  300px);
     }
 }
