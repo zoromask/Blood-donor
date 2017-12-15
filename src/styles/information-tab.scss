@@ -1,6 +1,5 @@
 .infoTab {
     max-width: 500px;
-    background: #333333;
     padding: 15px;
     // border-radius: 8px;
     font-family: Georgia,'Times New Roman',Times,serif;
@@ -13,12 +12,10 @@
     display: inline-block;
     border: none;
     outline: none;
-    color: #fff;
     font-size: 16px;
     margin-bottom: 20px;
     padding: 5px;
-    background: #333;
-    border-bottom: 2px solid grey;
+    border-bottom: 1px solid grey;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -31,7 +28,6 @@
 
 .field-title {
     display: inline-block;
-    color: #fff;
     min-width: 100px;
     font-family: 'Ubuntu';
     font-size: 17px;
@@ -50,7 +46,7 @@
     font-weight: 700;
     outline: none;
     padding: 5px 10px;
-    margin: 5px 10px;
+    margin: 10px;
     position: relative;
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
