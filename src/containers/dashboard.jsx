@@ -5,7 +5,6 @@ import FilterTab from '../components/FilterTab.jsx';
 import InformationTab from '../components/InformationTab.jsx';
 import {Gmaps, Marker, InfoWindow, Circle} from 'react-gmaps';
 import InfoTab from '../components/SignupTab.jsx';
-import { Gmaps, Marker, InfoWindow, Circle } from 'react-gmaps';
 import axios from 'axios';
 import fire from '../utility/firebase';
 import firebase from 'firebase';
