@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import fire from '../utility/firebase';
 import firebase from 'firebase';
 
 
@@ -13,48 +12,18 @@ class InfoTab extends Component {
         };
     }
 
-    componentWillMount() {
-        var me = this;
-        firebase.auth().onAuthStateChanged(function (user) {
-            if (user) {
-                me.setState({
-                    login: true
-                });
-                console.log('login');
-            } else {
-                me.setState({
-                    login: false
-                });
-                console.log("signout");
-            }
-        });
-    }
-
     logInWithGoolge() {
         let provider = new firebase.auth.GoogleAuthProvider();
-        firebase.auth().signInWithPopup(provider).then(function (result) {
-            // cons
-        }).catch(function (error) {
-
-        });
+        firebase.auth().signInWithPopup(provider);
     }
 
     logInWithFb() {
         let provider = new firebase.auth.FacebookAuthProvider();
-        firebase.auth().signInWithPopup(provider).then(function (result) {
-
-        }).catch(function (error) {
-
-        });
-        console.log("fb");
+        firebase.auth().signInWithPopup(provider);
     }
 
     logOut() {
-        firebase.auth().signOut().then(function () {
-            console.log('signout');
-        }, function (error) {
-            console.log('error');
-        });
+        firebase.auth().signOut();
     }
 
     render() {
