@@ -1,9 +1,14 @@
 .filter-range #ageRange, .filter-range #radiusRange {
-	margin: 5px auto;
-	max-width: 200px;
+    margin: 5px auto;
+    width: 90%;
+	max-width: 220px;
     height: 20px;
     
     .noUi-handle {
         width: 30px !important;
+    }
+
+    .noUi-connect {
+        background-color: $blue;
     }
 }

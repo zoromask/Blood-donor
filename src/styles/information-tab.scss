@@ -39,7 +39,7 @@
     color: #fff;
     font-family: inherit;
     font-size: inherit;
-    background: #0e83cd;
+    background: $red;
     cursor: pointer;
     display: inline-block;
     letter-spacing: 1px;
@@ -51,10 +51,6 @@
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     transition: all 0.3s;
-    &:hover {
-        color: #0e83cd;
-        background: #fff;
-    }
 }
 .bar {
     background: rgba(255, 255, 255, 0.5);
