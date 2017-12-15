@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Tabs from '../components/Tabs.jsx';
 import Tab from '../components/Tab.jsx';
 import FilterTab from '../components/FilterTab.jsx';
+import InformationTab from '../components/InformationTab.jsx';
 import {Gmaps, Marker, InfoWindow, Circle} from 'react-gmaps';
 
 export class Dashboard extends Component {
@@ -50,7 +51,7 @@ export class Dashboard extends Component {
 							<FilterTab />
 						</Tab>
 						<Tab tabName={'Information'} linkClassName={'link-class-1'}>
-							<p>content 1</p>
+							<InformationTab />
 						</Tab>
 					</Tabs>
 				</div>
