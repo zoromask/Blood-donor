@@ -1,0 +1,9 @@
+.filter-range #ageRange, .filter-range #radiusRange {
+	margin: auto;
+	max-width: 200px;
+    height: 20px;
+    
+    .noUi-handle {
+        width: 30px !important;
+    }
+}
