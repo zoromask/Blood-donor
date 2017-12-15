@@ -70,16 +70,7 @@ export class Dashboard extends Component {
 							lat={this.state.coords.lat}
 							lng={this.state.coords.lng}
 							draggable={true}
-							onDragEnd={this.onDragEnd} />
-						<InfoWindow
-							lat={this.state.coords.lat}
-							lng={this.state.coords.lng}
-							content={'Hello, React :)'}
-							onCloseClick={this.onCloseClick} />
-						<Circle
-							lat={this.state.coords.lat}
-							lng={this.state.coords.lng}
-							radius={500}
+							onDragEnd={this.onDragEnd}
 							onClick={this.onClick} />
 					</Gmaps>
 				</div>
