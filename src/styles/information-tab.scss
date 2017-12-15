@@ -1,0 +1,62 @@
+.infoTab {
+    max-width: 500px;
+    padding: 15px;
+    // border-radius: 8px;
+    font-family: Georgia,'Times New Roman',Times,serif;
+    &-field {
+        display: flex;
+        flex-direction: column;
+    }
+}
+.text-field {
+    display: inline-block;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    margin-bottom: 20px;
+    padding: 5px;
+    border-bottom: 1px solid grey;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 55%;
+    transition: .3s ease;
+    &:focus {
+        border-bottom-color: #0e83cd;
+    }
+}
+
+.field-title {
+    display: inline-block;
+    min-width: 100px;
+    font-family: 'Ubuntu';
+    font-size: 17px;
+    font-weight: 100;
+}
+.button {
+    width: 40%;
+    border-radius: 5px;
+    border: 2px solid #fff;
+    color: #fff;
+    font-family: inherit;
+    font-size: inherit;
+    background: $red;
+    cursor: pointer;
+    display: inline-block;
+    letter-spacing: 1px;
+    font-weight: 700;
+    outline: none;
+    padding: 5px 10px;
+    margin: 10px;
+    position: relative;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
+}
+.bar {
+    background: rgba(255, 255, 255, 0.5);
+    content: '';
+    height: 3.66667px;
+    transition: .3s ease;
+    position: relative;
+}
