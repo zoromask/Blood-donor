@@ -15,8 +15,8 @@ export class Dashboard extends Component {
 		super(props, context);
 		this.state = {
 			coords: {
-				lat: 51.5258541,
-				lng: -0.08040660000006028
+				lat: 22.0667799,
+				lng: 105.8027846,
 			},
 			mapKey: {
 				v: '3.exp',
@@ -24,6 +24,24 @@ export class Dashboard extends Component {
 			},
 			login: null,
 			radius: 0,
+			listUser: [{
+				name: "Nhat",
+				lat: 21.0667799,
+				long: 105.8027846,
+			}, {
+				name: "Dung",
+				lat: 21.02939180913695,
+				long: 105.77293395996094,
+			}, {
+				name: "Thai",
+				lat: 21.01272715296389,
+				long: 105.84159851074219,
+			}, {
+				name: "Long",
+				lat: 20.970416204423838,
+				long: 105.81962585449219,
+			}
+			],
 		}
 		this.filterAddress = this.filterAddress.bind(this);
 		this.filterRadius = this.filterRadius.bind(this);
@@ -48,6 +66,38 @@ export class Dashboard extends Component {
 				};
 			});
 		}, 1000);
+	}
+
+	// getUserPointer() {
+	// 	var me = this;
+	// 	const data = this.state.listUser;
+	// 	let results = [];
+	// 	data.forEach((eachData) => {
+	// 		let temp = (<Marker
+	// 			lat={eachData.lat}
+	// 			lng={eachData.long}
+	// 			draggable={true}
+	// 			onClick={me.onClick}
+	// 			key = {eachData.name}
+	// 		/>);
+	// 		results.push(temp);
+	// 	});
+	// 	return results;
+	// }
+
+	getUserPointer() {
+		var me = this;
+		const data = this.state.listUser;
+		const results = data.map((eachData) => 
+			<Marker
+				lat={eachData.lat}
+				lng={eachData.long}
+				draggable={true}
+				onClick={me.onClick}
+				key = {eachData.name}
+			/>
+		);
+		return results;
 	}
 
 	onMapCreated(map) {
@@ -175,6 +225,8 @@ export class Dashboard extends Component {
 							draggable={true}
 							onDragEnd={this.onDragEnd}
 							onClick={this.onClick} />
+
+						{this.getUserPointer()}
 
 						<Circle
 							lat={this.state.coords.lat}
