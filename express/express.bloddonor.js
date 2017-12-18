@@ -95,9 +95,9 @@ parseBloodQueryModel = function(req) {
     return {
         BloodType: req.query.bloodType,
         Address: req.query.address,
-        // Longitude: 1,
-        // Latitude: 2,
-        Age: { $gte: req.query.ageFrom, $lte: req.query.ageTo },
+        Longitude: { $gte: +req.query.minLongitude, $lte: +req.query.maxLongitude },
+        Latitude: { $gte: +req.query.minLatitude, $lte: +req.query.maxLatitude },
+        Age: { $gte: +req.query.ageFrom, $lte: +req.query.ageTo },
     }
 }
 
