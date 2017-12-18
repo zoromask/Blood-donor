@@ -22,6 +22,12 @@ export class Dashboard extends Component {
 				v: '3.exp',
 				key: 'YOUR_API_KEY'
 			},
+			searchArea: {	
+				upLat: 0,
+				downLat: 0,
+				leftLong: 0,
+				rightLong: 0
+			},
 			login: null,
 			radius: 0,
 		}
@@ -92,7 +98,15 @@ export class Dashboard extends Component {
 	filterRadius(radius) {	//Unit: meter
 		var { lat, lng } = this.state.coords;
 		radius = parseInt(radius) * 100;
-		this.setState({ radius: radius });
+		this.setState({ 
+			radius: radius, 
+			searchArea: {	
+				upLat: lat + radius/100,
+				downLat: lat - radius/100,
+				leftLong: lng - radius/100,
+				rightLong: lng + radius/100
+			},
+		});
 		// axios.request({
 		// 	url: 'https://maps.googleapis.com/maps/api/place/textsearch/json?location='+lat+','+lng+'&radius='+radius,
 		// 	method: 'get',
