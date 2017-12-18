@@ -50,12 +50,12 @@
     "url-loader": "^0.5.9",
     "webpack": "^3.5.5",
     "webpack-browser-plugin": "^1.0.20",
-    "webpack-dev-server": "^2.7.1"
+    "webpack-dev-server": "^2.7.1",
+    "body-parser": "^1.18.2",
+    "nouislider": "^10.1.0"
   },
   "devDependencies": {
-    "body-parser": "^1.18.2",
     "mongodb": "^3.0.0-rc0",
-    "mongoose": "^4.13.7",
-    "nouislider": "^10.1.0"
+    "mongoose": "^4.13.7"
   }
 }
