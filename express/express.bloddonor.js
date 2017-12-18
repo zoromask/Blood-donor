@@ -81,8 +81,10 @@ parseBlooddonorModel = function(req) {
         _id: mongoose.Types.ObjectId(req.body.id),
         FullName: req.body.fullName,
         Address: req.body.address,
+        Longitude: !!req.body.longitude ? +req.body.longitude : 0,
+        Latitude: !!req.body.latitude ? +req.body.latitude : 0,
         Phone: req.body.phone,
-        Age: !!req.body.age ? req.body.age : 0,
+        Age: !!req.body.age ? +req.body.age : 0,
         BloodType: req.body.bloodType,
         Height: !!req.body.height ? +req.body.height : 0,
         Weight: !!req.body.weight ? +req.body.weight : 0
@@ -93,8 +95,9 @@ parseBloodQueryModel = function(req) {
     return {
         BloodType: req.query.bloodType,
         Address: req.query.address,
+        // Longitude: 1,
+        // Latitude: 2,
         Age: { $gte: req.query.ageFrom, $lte: req.query.ageTo },
-        // Radius: { $gte: req.query.radiusFrom, $lte: req.query.radiusTo },
     }
 }
 
