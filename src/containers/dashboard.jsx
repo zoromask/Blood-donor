@@ -87,14 +87,14 @@ export class Dashboard extends Component {
 		var {lat,lng} = this.state.coords;
 		radius = parseInt(radius) * 100;
 		this.setState({radius: radius});
-		// axios.request({
-		// 	url: 'https://maps.googleapis.com/maps/api/place/textsearch/json?location='+lat+','+lng+'&radius='+radius,
-		// 	method: 'get',
-		// 	// `headers` are custom headers to be sent
-  		// 	headers: {'X-Requested-With': 'XMLHttpRequest'},
-		// }).then((res) => {}).catch((err) => {
-		// 	console.log(err);
-		// });
+		axios.request({
+			url: 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+lat+','+lng+'&radius='+radius+'&type=restaurant&key=AIzaSyC7-Y8Wp2q_4gYxOxgDFt5XSWbL_NNXjUI',
+			method: 'get',
+			// `headers` are custom headers to be sent
+  			headers: {'X-Requested-With': 'XMLHttpRequest'},
+		}).then((res) => {}).catch((err) => {
+			console.log(err);
+		});
 	}
 
 	logout() {
