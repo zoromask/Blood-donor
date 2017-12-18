@@ -20,7 +20,7 @@ export class Dashboard extends Component {
 			},
 			mapKey: {
 				v: '3.exp',
-				key: 'YOUR_API_KEY'
+				key: 'AIzaSyC7-Y8Wp2q_4gYxOxgDFt5XSWbL_NNXjUI'
 			},
 			radius: 0,
 			login: false
@@ -84,17 +84,18 @@ export class Dashboard extends Component {
 		}
 	}
 	filterRadius(radius) {	//Unit: meter
-		var {lat,lng} = this.state.coords;
-		radius = parseInt(radius) * 100;
-		this.setState({radius: radius});
-		axios.request({
-			url: 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+lat+','+lng+'&radius='+radius+'&type=restaurant&key=AIzaSyC7-Y8Wp2q_4gYxOxgDFt5XSWbL_NNXjUI',
-			method: 'get',
-			// `headers` are custom headers to be sent
-  			headers: {'X-Requested-With': 'XMLHttpRequest'},
-		}).then((res) => {}).catch((err) => {
-			console.log(err);
-		});
+		// var {lat,lng} = this.state.coords;
+		// radius = parseInt(radius) * 100;
+		// this.setState({radius: radius});
+		// let url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+lat+','+lng+'&radius='+radius+'&key=' + this.state.mapKey.key;
+		// axios.request({
+		// 	url: url,
+		// 	method: 'get',
+		// 	// `headers` are custom headers to be sent
+  // 			headers: {'X-Requested-With': 'XMLHttpRequest'},
+		// }).then((res) => {}).catch((err) => {
+		// 	console.log(err);
+		// });
 	}
 
 	logout() {
