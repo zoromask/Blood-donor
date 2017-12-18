@@ -44,7 +44,7 @@ module.exports = class MongoBlooddonor {
         if (!!collectionName && newModel != null) {
             MongoClient.connect(url, function(err, db) {
                 if (err) throw err;
-                var userToUpdate = newModel.ID;
+                var userToUpdate = newModel._id;
                 var database = db.db(bloddonor);
                 database.collection(collectionName).update({ _id: userToUpdate }, newModel, function(err, res) {
                     if (err) throw err;
