@@ -93,7 +93,6 @@ module.exports = class MongoBlooddonor {
             MongoClient.connect(url, function(err, db) {
                 if (err) throw err;
                 var database = db.db(bloddonor);
-                console.log(queryModel);
                 database.collection(collectionName).find(queryModel).toArray(function(err, res) {
                     if (err) throw err;
                     db.close();

@@ -53,25 +53,21 @@ app.route("/bloods/")
         })
     });
 
-// app.route("/findBlooddonor/").get(function(req, res) {
-//     var fullName = req.query.fullName;
-//     var queryModel = {
-//         fullname: fullName,
-//         _id: mongoose.Types.ObjectId(req.query.id),
-//     };
-//     mongoBlooddonor.getByModel(_blooddonorCollection, queryModel, function(err, result) {
-//         if (err) {
-//             res.send("Error", err);
-//             return;
-//         }
-//         res.send(result);
-//     })
-// });
-
-app.route("/getbyid/").get(function(req, res) {
+app.route("/bloods/getbyid/").get(function(req, res) {
     if (!req.query.id) return res.sendStatus(400);
     var objectID = mongoose.Types.ObjectId(req.query.id);
     mongoBlooddonor.getByID(_blooddonorCollection, objectID, function(err, result) {
+        if (err) {
+            res.send("Error", err);
+            return;
+        }
+        res.send(result);
+    })
+});
+
+app.route("/bloods/filter/").get(function(req, res) {
+    var queryModel = parseBloodQueryModel(req);
+    mongoBlooddonor.getByModel(_blooddonorCollection, queryModel, function(err, result) {
         if (err) {
             res.send("Error", err);
             return;
@@ -86,12 +82,20 @@ parseBlooddonorModel = function(req) {
         FullName: req.body.fullName,
         Address: req.body.address,
         Phone: req.body.phone,
-        Age: req.body.age,
+        Age: !!req.body.age ? req.body.age : 0,
         BloodType: req.body.bloodType,
         Height: !!req.body.height ? +req.body.height : 0,
         Weight: !!req.body.weight ? +req.body.weight : 0
     }
 }
 
+parseBloodQueryModel = function(req) {
+    return {
+        BloodType: req.query.bloodType,
+        Address: req.query.address,
+        Age: { $gte: req.query.ageFrom, $lte: req.query.ageTo },
+        // Radius: { $gte: req.query.radiusFrom, $lte: req.query.radiusTo },
+    }
+}
 
-var server = app.listen(3000, function() {});
+var server = app.listen(3030, function() {});
