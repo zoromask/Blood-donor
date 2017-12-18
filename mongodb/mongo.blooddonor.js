@@ -1,7 +1,7 @@
+var mongoose = require('mongoose');
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
 var bloddonor = "bloddonor";
-
 
 module.exports = class MongoBlooddonor {
     constructor() {}
@@ -12,7 +12,7 @@ module.exports = class MongoBlooddonor {
             MongoClient.connect(url, function(err, db) {
                 if (err) throw err;
                 var database = db.db(bloddonor);
-                
+
                 database.createCollection(collectionName, function(err, res) {
                     if (err) throw err;
                     console.log("Collection created!");
@@ -41,24 +41,19 @@ module.exports = class MongoBlooddonor {
 
     // update
     update(collectionName, newModel = {}, callback) {
-            if (!!collectionName && newModel != null) {
-                MongoClient.connect(url, function(err, db) {
+        if (!!collectionName && newModel != null) {
+            MongoClient.connect(url, function(err, db) {
+                if (err) throw err;
+                var userToUpdate = newModel.ID;
+                var database = db.db(bloddonor);
+                database.collection(collectionName).update({ _id: userToUpdate }, newModel, function(err, res) {
                     if (err) throw err;
-                    var userToUpdate = newModel.ID;
-                    var database = db.db(bloddonor);
-                    console.log("aa", userToUpdate)
-                    database.collection(collectionName).find({_id: userToUpdate}).toArray(function(er, res) {
-                        console.log("f", res);
-                    });
-                    database.collection(collectionName).findOneAndUpdate({_id: userToUpdate}, newModel, function(err, res) {
-                        if (err) throw err;
-                        console.log("1 document updated!");
-                        db.close();
-                        callback(err, res);
-                    });
+                    db.close();
+                    callback(err, res);
                 });
-            }
+            });
         }
+    }
 
     // delete
     delete(queryModel = {}, collectionName, callback) {
@@ -98,7 +93,23 @@ module.exports = class MongoBlooddonor {
             MongoClient.connect(url, function(err, db) {
                 if (err) throw err;
                 var database = db.db(bloddonor);
+                console.log(queryModel);
                 database.collection(collectionName).find(queryModel).toArray(function(err, res) {
+                    if (err) throw err;
+                    db.close();
+                    callback(err, res);
+                });
+            });
+        }
+    }
+
+    // get by ID
+    getByID(collectionName, objectID, callback) {
+        if (!!collectionName && !!objectID) {
+            MongoClient.connect(url, function(err, db) {
+                if (err) throw err;
+                var database = db.db(bloddonor);
+                database.collection(collectionName).findOne({ _id: mongoose.Types.ObjectId(objectID) }, function(err, res) {
                     if (err) throw err;
                     db.close();
                     callback(err, res);

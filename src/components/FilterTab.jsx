@@ -12,9 +12,42 @@ class FilterTab extends Component{
         }
         this.handleInputs = this.handleInputs.bind(this);
         this.formatRange = this.formatRange.bind(this);
+        this.addressOnChange = this.addressOnChange.bind(this);
+        this.bloodyTypeOnChange = this.bloodyTypeOnChange.bind(this);
     }
 
     componentDidMount() {
+        this.initializeRangeSlider();
+        this.addressOnChange();
+    }
+
+    //Click 'Search' button
+    handleInputs(e) {
+        var data = {...this.state.inputs, radius: '', age: ''};
+        var ageSlider = document.getElementById('ageRange');
+        var radiusSlider = document.getElementById('radiusRange');
+        data.ages = ageSlider.noUiSlider.get();
+        data.radius = radiusSlider.noUiSlider.get();
+        this.props.submitData(data);
+    }
+
+    //Bloody Type on change
+    bloodyTypeOnChange(e) {
+        var { inputs } = this.state;
+        this.setState({inputs: {...inputs, bloodType: e.target.value}});
+    }
+    //Address on change
+    addressOnChange() {
+        var { inputs } = this.state;
+        var { debounce, filterAddress } = this.props;
+        document.getElementById('addressInput').addEventListener('input', debounce((e) => {
+            this.setState({inputs: {...inputs, address: e.target.value}});
+            this.props.filterAddress(e.target.value);
+        }, 300));
+    }
+
+    //Create range sliders
+    initializeRangeSlider() {
         var ageSlider = document.getElementById('ageRange');
         noUiSlider.create(ageSlider, {
             start: [10, 50],
@@ -28,13 +61,13 @@ class FilterTab extends Component{
         })
         ageSlider.noUiSlider.on('update', function(values, handle){
             var ageText = document.getElementById('ageText');
-            ageText.innerHTML = ageSlider.noUiSlider.get()[0] + '-' + ageSlider.noUiSlider.get()[1];
+            ageText.innerHTML = ageSlider.noUiSlider.get()[0] + ' - ' + ageSlider.noUiSlider.get()[1];
         });
 
         var radiusSlider = document.getElementById('radiusRange');        
         noUiSlider.create(radiusSlider, {
-            start: [0, 10],
-            connect: true,
+            start: [0],
+            connect: [true, false],
             step: 1,
             range: {
                 min: 0,
@@ -42,21 +75,13 @@ class FilterTab extends Component{
             },
             format: this.formatRange()
         })
-        radiusSlider.noUiSlider.on('update', function(values, handle){
+        radiusSlider.noUiSlider.on('update', (values, handle) => {
             var radiusText = document.getElementById('radiusText');
-            radiusText.innerHTML = radiusSlider.noUiSlider.get()[0] + '-' + radiusSlider.noUiSlider.get()[1];
+            var value = radiusSlider.noUiSlider.get();
+            radiusText.innerHTML = value;
+            this.props.filterRadius(value);
         });
     }
-
-    handleInputs(e) {
-        var data = {...this.state.inputs, radius: '', age: ''};
-        var ageSlider = document.getElementById('ageRange');
-        var radiusSlider = document.getElementById('radiusRange');
-        data.ages = ageSlider.noUiSlider.get();
-        data.radius = radiusSlider.noUiSlider.get();
-        this.props.submitData(data);
-    }
-
     formatRange() {
         return {
             from: function(value) {
@@ -69,38 +94,36 @@ class FilterTab extends Component{
     }
 
     render() {
-        var { inputs } = this.state;
+        var {debounce} = this.props;
         return (
-            <div className="filter-wrapper">
-                <div className="">
-                    <span>Blood Type </span>
-                    <select name="bloodtype" className="blood-type-selectbox"
-                        onChange={(e) => this.setState({inputs: {...inputs, bloodType: e.target.value}})} value={inputs.bloodType}>
+            <div className="filter-wrapper infoTab">
+                <div className="infoTab-field-item">
+                    <label className="field-title">Blood Type: </label>
+                    <select name="bloodtype" className="blood-type-selectbox text-field"
+                        onChange={(e) => this.bloodyTypeOnChange(e)}>
                         <option value="A">A</option>
                         <option value="B">B</option>
-                        <option value="0">O</option>
                         <option value="AB">AB</option>
+                        <option value="0">O</option>
                     </select>
                 </div>
 
-                <div className="">
-                    <span>Address: </span>
-                    <input type="text" name="address" onChange={(e) => this.setState({inputs: {...inputs, address: e.target.value}})} value={inputs.address}/>
+                <div className="infoTab-field-item">
+                    <label className="field-title">Address: </label >
+                    <input id="addressInput" type="text" name="address" className="text-field" required/>
                 </div>
 
-                <div className="filter-range">
-                    <div>Age: <span id="ageText"></span></div>
+                <div className="infoTab-field-item filter-range">
+                    <div><label className="field-title">Age: </label><span id="ageText"></span></div>
                     <div id="ageRange"></div>
                 </div>
 
-                <div className="filter-range">
-                    <div>Radius: <span id="radiusText"></span></div>
+                <div className="infoTab-field-item filter-range">
+                    <div><label className="field-title">Radius: </label><span id="radiusText"></span> (km)</div>
                     <div id="radiusRange"></div>
                 </div>
 
-                <div className="">
-                    <button className="" onClick={(e) => this.handleInputs(e)}>Submit</button>
-                </div>
+                <button type="button" className="button" onClick={(e) => this.handleInputs(e)}>Search</button>
             </div>
         )
     }

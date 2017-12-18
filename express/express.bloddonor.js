@@ -1,3 +1,4 @@
+var mongoose = require('mongoose');
 var express = require('express');
 var app = express();
 
@@ -36,11 +37,12 @@ app.route("/bloods/")
                 }
                 res.send("1 document inserted successfully!!");
             })
-        }else{
+        } else {
             throw "Input data is Invalid!!!";
         }
     })
     .put(function(req, res) {
+        if (!req.body) return res.sendStatus(400);
         var blooddonorNewModel = parseBlooddonorModel(req);
         mongoBlooddonor.update(_blooddonorCollection, blooddonorNewModel, function(err, result) {
             if (err) {
@@ -51,13 +53,25 @@ app.route("/bloods/")
         })
     });
 
-app.route("/findBlooddonor/").get(function(req, res) {
-    var fullName = req.query.fullname;
-    var queryModel = {
-        fullname: fullName
-    };
+// app.route("/findBlooddonor/").get(function(req, res) {
+//     var fullName = req.query.fullName;
+//     var queryModel = {
+//         fullname: fullName,
+//         _id: mongoose.Types.ObjectId(req.query.id),
+//     };
+//     mongoBlooddonor.getByModel(_blooddonorCollection, queryModel, function(err, result) {
+//         if (err) {
+//             res.send("Error", err);
+//             return;
+//         }
+//         res.send(result);
+//     })
+// });
 
-    mongoBlooddonor.getByModel(_blooddonorCollection, queryModel, function(err, result) {
+app.route("/getbyid/").get(function(req, res) {
+    if (!req.query.id) return res.sendStatus(400);
+    var objectID = mongoose.Types.ObjectId(req.query.id);
+    mongoBlooddonor.getByID(_blooddonorCollection, objectID, function(err, result) {
         if (err) {
             res.send("Error", err);
             return;
@@ -68,7 +82,7 @@ app.route("/findBlooddonor/").get(function(req, res) {
 
 parseBlooddonorModel = function(req) {
     return {
-        ID: req.body.id,
+        _id: mongoose.Types.ObjectId(req.body.id),
         FullName: req.body.fullName,
         Address: req.body.address,
         Phone: req.body.phone,
