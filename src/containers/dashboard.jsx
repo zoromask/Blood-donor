@@ -170,7 +170,7 @@ export class Dashboard extends Component {
 						lng={this.state.coords.lng}
 						zoom={12}
 						loadingMessage={'Be happy'}
-						params={this.state.params}
+						params={this.state.mapKey}
 						onMapCreated={this.onMapCreated}>
 
 						<Marker
