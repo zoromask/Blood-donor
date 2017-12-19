@@ -23,10 +23,10 @@ export class Dashboard extends Component {
 				key: 'YOUR_API_KEY'
 			},
 			searchArea: {	
-				upLat: 0,
-				downLat: 0,
-				leftLong: 0,
-				rightLong: 0
+				maxLat: 0,
+				minLat: 0,
+				minLong: 0,
+				maxLong: 0
 			},
 			login: null,
 			radius: 0,
@@ -101,10 +101,10 @@ export class Dashboard extends Component {
 		this.setState({ 
 			radius: radius, 
 			searchArea: {	
-				upLat: lat + radius/100,
-				downLat: lat - radius/100,
-				leftLong: lng - radius/100,
-				rightLong: lng + radius/100
+				maxLat: lat + radius/100,
+				minLat: lat - radius/100,
+				minLong: lng - radius/100,
+				maxLong: lng + radius/100
 			},
 		});
 		// axios.request({
@@ -141,6 +141,7 @@ export class Dashboard extends Component {
 				<Tabs defaultActiveTabIndex={0}>
 					<Tab tabName={'Filter'} linkClassName={'link-class-0'}>
 						<FilterTab
+							searchArea = {this.state.searchArea}
 							filterAddress={this.filterAddress}
 							filterRadius={this.filterRadius}
 						/>

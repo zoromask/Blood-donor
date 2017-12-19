@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom'
+import axios from 'axios';
 
 export class Tabs extends Component {
   
@@ -18,7 +19,7 @@ export class Tabs extends Component {
             activeTabIndex: tabIndex === this.state.activeTabIndex ? this.props.defaultActiveTabIndex : tabIndex
         });
     }
-  
+
     // Encapsulate <Tabs/> component API as props for <Tab/> children
     renderChildrenWithTabsApiAsProps() {
         return React.Children.map(this.props.children, (child, index) => {
@@ -64,7 +65,26 @@ export class Tabs extends Component {
     //submit filtering/adding data
     submitData(data) {
         console.log(data);
-    }
+        axios.get('http://localhost:5000/filter/blood', {
+            params: {
+                bloodType: data.bloodType,
+                ageFrom: data.ages[0],
+                ageTo: data.ages[1],
+                longitudeMin: data.searchArea.minLong,
+                longitudeMax: data.searchArea.maxLong,
+                latitudeMin: data.searchArea.minLat,
+                latitudeMax: data.searchArea.maxLat
+            }
+            })
+            .then(function (response) {
+                console.log("succeed");
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log('error');
+                console.log(error);
+            });
+        }
   
     render() {
         return (

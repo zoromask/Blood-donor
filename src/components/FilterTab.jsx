@@ -28,6 +28,7 @@ class FilterTab extends Component{
         var radiusSlider = document.getElementById('radiusRange');
         data.ages = ageSlider.noUiSlider.get();
         data.radius = radiusSlider.noUiSlider.get();
+        data.searchArea = this.props.searchArea;
         this.props.submitData(data);
     }
 
