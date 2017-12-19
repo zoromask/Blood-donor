@@ -8,6 +8,7 @@ import InfoTab from '../components/SignupTab.jsx';
 import axios from 'axios';
 import fire from '../utility/firebase';
 import firebase from 'firebase';
+import querystring from 'query-string';
 
 export class Dashboard extends Component {
 
@@ -103,6 +104,41 @@ export class Dashboard extends Component {
 		// });
 	}
 
+	async addDonorInformation(data) {
+		var params = null;
+		var error = null;
+		if(data.address != '') {
+			await axios.get('http://maps.googleapis.com/maps/api/geocode/json?address=' + data.address)
+				.then((res) => {
+					var { results } = res.data;
+					if (results[0]) {
+						params = {
+							...data,
+							latitude: results[0].geometry.location.lat,
+							longitude: results[0].geometry.location.lng 
+						}
+					}
+				}).catch((err) => {
+					console.log(err);
+				});
+		}
+
+		if(params) {
+			axios.post('http://localhost:5000/blood/add', querystring.stringify(params), {
+				headers: {
+					'crossDomain': true,
+					'Content-Type' : 'application/x-www-form-urlencoded'
+				}
+			}).then((res) => {
+				//console.log(res);
+			}).catch((err) => {
+				error = err;
+			});
+		}
+
+		return error;
+	}
+
 	logout() {
 		firebase.auth().signOut();
 	}
@@ -132,7 +168,10 @@ export class Dashboard extends Component {
 						/>
 					</Tab>
 					<Tab tabName={'Information'} linkClassName={'link-class-1'}>
-						<InformationTab currentUser={this.state.currentUser} />
+						<InformationTab
+							currentUser={this.state.currentUser}
+							addDonorInformation={this.addDonorInformation}
+						/>
 					</Tab>
 				</Tabs>);
 		}
