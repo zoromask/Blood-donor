@@ -14,7 +14,7 @@ class InformationTab extends Component{
                 <div className="infoTab-field">
                     <div className="infoTab-field-item">
                         <label className="field-title"> Full Name </label>
-                        <input type="text" className ="text-field"/>
+                        <input type="text" className ="text-field" defaultValue={this.props.currentUser.displayName}/>
                     </div>
                     <div className="infoTab-field-item">
                         <label className="field-title"> Address </label>
@@ -22,7 +22,7 @@ class InformationTab extends Component{
                     </div>
                     <div className="infoTab-field-item">
                         <label className="field-title"> Phone </label>
-                        <input type="text" className ="text-field"/>
+                        <input type="text" className ="text-field" defaultValue={this.props.currentUser.phoneNumber}/>
                     </div>
                     <div className="infoTab-field-item">
                         <label className="field-title"> Age </label>
