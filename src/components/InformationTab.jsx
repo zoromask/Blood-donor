@@ -20,11 +20,6 @@ class InformationTab extends Component{
         e.preventDefault();
         var {inputs} = this.state;
         var error = this.props.addDonorInformation(inputs);
-        if(!error) {
-            console.log(error);
-        } else {
-            console.log('success');
-        }
     }
     reset(e) {
         var {displayName, phoneNumber} = this.props.currentUser;

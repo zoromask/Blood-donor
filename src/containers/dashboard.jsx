@@ -106,7 +106,6 @@ export class Dashboard extends Component {
 
 	async addDonorInformation(data) {
 		var params = null;
-		var error = null;
 		if(data.address != '') {
 			await axios.get('http://maps.googleapis.com/maps/api/geocode/json?address=' + data.address)
 				.then((res) => {
@@ -124,19 +123,20 @@ export class Dashboard extends Component {
 		}
 
 		if(params) {
-			axios.post('http://localhost:5000/blood/add', querystring.stringify(params), {
+			await axios.post('http://localhost:5000/blood/add', querystring.stringify(params), {
 				headers: {
 					'crossDomain': true,
 					'Content-Type' : 'application/x-www-form-urlencoded'
 				}
 			}).then((res) => {
-				//console.log(res);
+				if(res.data.errmsg) {
+					var error = res.data.errmsg;
+					console.log(error);
+				}
 			}).catch((err) => {
 				error = err;
 			});
 		}
-
-		return error;
 	}
 
 	logout() {
