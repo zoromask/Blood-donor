@@ -6,10 +6,14 @@ export class Tabs extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            activeTabIndex: this.props.defaultActiveTabIndex
+            activeTabIndex: this.props.defaultActiveTabIndex,
+            error: false,
+            success: false
         };
         this.handleTabClick = this.handleTabClick.bind(this);
         this.debounce = this.debounce.bind(this);
+        this.renderErrorMessage = this.renderErrorMessage.bind(this);
+        this.renderSuccessMessage = this.renderSuccessMessage.bind(this);
     }
   
     // Toggle currently active tab
@@ -37,9 +41,25 @@ export class Tabs extends Component {
         if(children[activeTabIndex]) {
             return React.cloneElement(children[activeTabIndex].props.children, {
                 submitData: this.submitData,
-                debounce: this.debounce
+                debounce: this.debounce,
+                renderErrorMessage: this.renderErrorMessage,
+                renderSuccessMessage: this.renderSuccessMessage
             });
         }
+    }
+
+    renderSuccessMessage() {
+        this.setState({ success: true });
+        setTimeout(() => {
+            this.setState({ success: false });
+        }, 4000)
+    }
+
+    renderErrorMessage() {
+        this.setState({ error: true });
+        setTimeout(() => {
+            this.setState({ error: false });
+        }, 4000)
     }
 
     // Returns a function, that, as long as it continues to be invoked, will not
@@ -74,6 +94,18 @@ export class Tabs extends Component {
                 </ul>
                 <div className="tabs-active-content">
                     {this.renderActiveTabContent()}
+                    
+                    { this.state.error ?
+                        <div className="status-message">
+                            <div className="error">Something wrong</div>
+                        </div> : ''
+                    }
+
+                    { this.state.success ?
+                        <div className="status-message">
+                            <div className="success">Success</div>
+                        </div> : ''
+                    }
                 </div>
             </div>
         );

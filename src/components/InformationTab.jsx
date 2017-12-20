@@ -26,7 +26,14 @@ class InformationTab extends Component{
     }
     save(e) {
         var {inputs} = this.state;
-        var error = this.props.editDonorInformation(inputs);
+        this.props.editDonorInformation(inputs).then((error) => {
+            if(error) {
+                this.props.renderErrorMessage();
+            } else {
+                this.props.renderSuccessMessage();
+            }
+        });
+        
     }
     reset(e) {
         var {displayName, phoneNumber} = this.props.currentUser;

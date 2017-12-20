@@ -139,6 +139,7 @@ export class Dashboard extends Component {
 	}
 	async editDonorInformation(data) {
 		var params = null;
+		var error = 0;
 		var {currentUser} = this.state;
 		if(data.address != '') {
 			await axios.get('http://maps.googleapis.com/maps/api/geocode/json?address=' + data.address)
@@ -153,25 +154,32 @@ export class Dashboard extends Component {
 						}
 					}
 				}).catch((err) => {
+					error = 1;
 					console.log(err);
 				});
+		} else {
+			error = 1;
 		}
 
 		if(params) {
 			var url = (!currentUser.info) ? 'http://localhost:5000/blood/add' : 'http://localhost:5000/blood/update/' + currentUser.info._id;
 			await axios.put(url, querystring.stringify(params)).then((res) => {
 				if(res.data.errmsg) {
-					var error = res.data.errmsg;
-					console.log(error);
+					error = res.data.errmsg;
 				}
 				this.getUserInfo(currentUser.email);
 				this.setState({
 					showInfoWindow: true
 				});
 			}).catch((err) => {
-				error = err;
+				error = 1;
+				console.log(err);
 			});
+		} else {
+			error = 1;
 		}
+
+		return error;
 	}
 	
 	/** END **/
