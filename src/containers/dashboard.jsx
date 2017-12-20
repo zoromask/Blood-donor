@@ -21,7 +21,7 @@ export class Dashboard extends Component {
 			},
 			mapKey: {
 				v: '3.exp',
-				key: 'YOUR_API_KEY'
+				key: 'AIzaSyC7-Y8Wp2q_4gYxOxgDFt5XSWbL_NNXjUI'
 			},
 			login: null,
 			radius: 0,
@@ -96,8 +96,12 @@ export class Dashboard extends Component {
 		var { lat, lng } = this.state.coords;
 		radius = parseInt(radius) * 100;
 		this.setState({ radius: radius });
+		// var {lat,lng} = this.state.coords;
+		// radius = parseInt(radius) * 100;
+		// this.setState({radius: radius});
+		// let url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+lat+','+lng+'&radius='+radius+'&key=' + this.state.mapKey.key;
 		// axios.request({
-		// 	url: 'https://maps.googleapis.com/maps/api/place/textsearch/json?location='+lat+','+lng+'&radius='+radius,
+		// 	url: url,
 		// 	method: 'get',
 		// 	// `headers` are custom headers to be sent
 		// 	headers: {'X-Requested-With': 'XMLHttpRequest'},
@@ -251,7 +255,7 @@ export class Dashboard extends Component {
 						lng={coords.lng}
 						zoom={12}
 						loadingMessage={'Be happy'}
-						params={this.state.params}
+						params={this.state.mapKey}
 						onMapCreated={this.onMapCreated}>
 
 						<Marker
