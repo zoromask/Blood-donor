@@ -1,4 +1,3 @@
-var mongoose = require('mongoose');
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
 var bloddonor = "bloddonor";
@@ -108,7 +107,7 @@ module.exports = class MongoBlooddonor {
             MongoClient.connect(url, function(err, db) {
                 if (err) throw err;
                 var database = db.db(bloddonor);
-                database.collection(collectionName).findOne({ _id: mongoose.Types.ObjectId(objectID) }, function(err, res) {
+                database.collection(collectionName).findOne({ _id: objectID }, function(err, res) {
                     if (err) throw err;
                     db.close();
                     callback(err, res);
