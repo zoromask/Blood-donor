@@ -4,22 +4,25 @@ class InformationTab extends Component{
     constructor(props){
         super(props);
         this.state = {
-            inputs: null
+            inputs: null,
+            resetInputs: null
         }
     }
     componentWillMount() {
         var {displayName, phoneNumber, info} = this.props.currentUser;
+        var info = {
+            fullName: info.fullName ? info.fullName : (displayName ? displayName : ''),
+            address: info.address ? info.address : '',
+            phone: info.phone ? info.phone : (phoneNumber ? phoneNumber : ''),
+            age: info.age ? info.age : '',
+            bloodType: info.bloodType ? info.bloodType : 'A',
+            height: info.height ? info.height : 0,
+            weight: info.weight ? info.weight : 0,
+        };
         this.setState({
-            inputs: {
-                fullName: info.fullName ? info.fullName : (displayName ? displayName : ''),
-                address: info.address ? info.address : '',
-                phone: info.phone ? info.phone : (phoneNumber ? phoneNumber : ''),
-                age: info.age ? info.age : '',
-                bloodType: info.bloodType ? info.bloodType : 'A',
-                height: info.height ? info.height : 0,
-                weight: info.weight ? info.weight : 0,
-            }
-        })
+            inputs: info,
+            resetInputs: info
+        });
     }
     save(e) {
         var {inputs} = this.state;
@@ -27,16 +30,8 @@ class InformationTab extends Component{
     }
     reset(e) {
         var {displayName, phoneNumber} = this.props.currentUser;
-        var resetInputs = {
-            fullName: displayName,
-            address: '',
-            phone: phoneNumber ? phoneNumber : '0123456789',
-            age: 10,
-            bloodType: 'A',
-            height: 0,
-            weight: 0,
-        };
-        this.setState({ inputs: resetInputs });
+        var { resetInputs } = this.state;
+        this.setState({ inputs: { ...resetInputs } });
     }
     render() {
         var {displayName, phoneNumber} = this.props.currentUser;

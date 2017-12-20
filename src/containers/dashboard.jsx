@@ -165,6 +165,9 @@ export class Dashboard extends Component {
 					console.log(error);
 				}
 				this.getUserInfo(currentUser.email);
+				this.setState({
+					showInfoWindow: true
+				});
 			}).catch((err) => {
 				error = err;
 			});
