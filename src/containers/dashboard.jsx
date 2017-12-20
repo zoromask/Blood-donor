@@ -25,9 +25,13 @@ export class Dashboard extends Component {
 			},
 			login: null,
 			radius: 0,
+			content: '',
+			showInfoWindow: false,
 		}
 		this.filterAddress = this.filterAddress.bind(this);
 		this.filterRadius = this.filterRadius.bind(this);
+		this.onClickMarker = this.onClickMarker.bind(this);
+		this.onCloseClickInfoWindow = this.onCloseClickInfoWindow.bind(this);
 	}
 
 	componentWillMount() {
@@ -61,12 +65,25 @@ export class Dashboard extends Component {
 		console.log('onDragEnd', e);
 	}
 
-	onCloseClick() {
-		console.log('onCloseClick');
+	onCloseClickInfoWindow() {
+		console.log('ok');
+		this.setState({
+			showInfoWindow: false
+		})
 	}
 
-	onClick(e) {
-		console.log('onClick', e);
+	onClickMarker(e) {
+		var content = '';
+		content += '<label>Fullname: </label> Dung Ngo</br>';
+		content += '<label>Address: </label> Hanoi</br>';
+		content += '<label>Age: </label> 22</br>';
+		content += '<label>Blood type: </label> A</br>';
+		content += '<label>Height: </label> 170cm</br>';
+		content += '<label>Weight: </label> 65kg</br>';
+		this.setState({
+			showInfoWindow: true,
+			content: content
+		});
 	}
 
 	/** HANDLE FILTER AUTOMATICALLY **/
@@ -211,15 +228,22 @@ export class Dashboard extends Component {
 						<Marker
 							lat={this.state.coords.lat}
 							lng={this.state.coords.lng}
-							draggable={true}
+							draggable={false}
 							onDragEnd={this.onDragEnd}
-							onClick={this.onClick} />
+							onClick={this.onClickMarker} />
+						{this.state.showInfoWindow ?
+							<InfoWindow
+								lat={this.state.coords.lat}
+								lng={this.state.coords.lng}
+								content={this.state.content}
+								options={{pixelOffset: new google.maps.Size(0,-37)}}
+								onCloseClick={this.onCloseClickInfoWindow}
+							/> : '' }
 
 						<Circle
 							lat={this.state.coords.lat}
 							lng={this.state.coords.lng}
-							radius={this.state.radius}
-							onClick={this.onClick} />
+							radius={this.state.radius}/>
 					</Gmaps>
 				</div>
 			</div>
