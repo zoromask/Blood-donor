@@ -3,18 +3,23 @@ import React, { Component } from 'react';
 class InformationTab extends Component{
     constructor(props){
         super(props);
-        var {displayName, phoneNumber} = this.props.currentUser;
         this.state = {
+            inputs: null
+        }
+    }
+    componentWillMount() {
+        var {displayName, phoneNumber, info} = this.props.currentUser;
+        this.setState({
             inputs: {
                 fullName: displayName,
-                address: '',
-                phone: '0123456789',
-                age: 10,
-                bloodType: 'A',
-                height: 0,
-                weight: 0,
+                address: info.address ? info.address : '',
+                phone: phoneNumber ? phoneNumber : '0123456789',
+                age: info.age ? info.age : '',
+                bloodType: info.bloodType ? info.bloodType : 'A',
+                height: info.height ? info.height : 0,
+                weight: info.weight ? info.weight : 0,
             }
-        }
+        })
     }
     save(e) {
         e.preventDefault();
@@ -27,7 +32,7 @@ class InformationTab extends Component{
         var resetInputs = {
             fullName: displayName,
             address: '',
-            phone: '0123456789',
+            phone: phoneNumber ? phoneNumber : '0123456789',
             age: 10,
             bloodType: 'A',
             height: 0,

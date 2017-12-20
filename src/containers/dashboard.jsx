@@ -25,30 +25,36 @@ export class Dashboard extends Component {
 			},
 			login: null,
 			radius: 0,
-			content: '',
+			currentUser: {
+				displayName: '',
+				email: '',
+				info: null	
+			},
 			showInfoWindow: false,
 		}
 		this.filterAddress = this.filterAddress.bind(this);
 		this.filterRadius = this.filterRadius.bind(this);
-		this.onClickMarker = this.onClickMarker.bind(this);
-		this.onCloseClickInfoWindow = this.onCloseClickInfoWindow.bind(this);
+		this.getUserInfo = this.getUserInfo.bind(this);
+		this.addDonorInformation =  this.addDonorInformation.bind(this);
 	}
 
 	componentWillMount() {
-		var me = this;
+		var {currentUser} = this.state;
 		setTimeout(() => {
-			firebase.auth().onAuthStateChanged(function (user) {
+			firebase.auth().onAuthStateChanged((user) => {
 				if (user) {
-					me.setState({
+					this.setState({
 						login: true,
 						currentUser: {
+							...currentUser,
 							displayName: user.displayName,
-						},
+							email: user.email
+						}
 					});
+					this.getUserInfo(user.email);
 				} else {
-					me.setState({
-						login: false,
-						currentUser: null
+					this.setState({
+						login: false
 					});
 				};
 			});
@@ -63,27 +69,6 @@ export class Dashboard extends Component {
 
 	onDragEnd(e) {
 		console.log('onDragEnd', e);
-	}
-
-	onCloseClickInfoWindow() {
-		console.log('ok');
-		this.setState({
-			showInfoWindow: false
-		})
-	}
-
-	onClickMarker(e) {
-		var content = '';
-		content += '<label>Fullname: </label> Dung Ngo</br>';
-		content += '<label>Address: </label> Hanoi</br>';
-		content += '<label>Age: </label> 22</br>';
-		content += '<label>Blood type: </label> A</br>';
-		content += '<label>Height: </label> 170cm</br>';
-		content += '<label>Weight: </label> 65kg</br>';
-		this.setState({
-			showInfoWindow: true,
-			content: content
-		});
 	}
 
 	/** HANDLE FILTER AUTOMATICALLY **/
@@ -120,9 +105,41 @@ export class Dashboard extends Component {
 		// 	console.log(err);
 		// });
 	}
+	/** END **/
 
+	/** HANDLERS for INFORMATION TAB **/
+	getUserInfo(email) {
+		var {currentUser} = this.state;
+		axios.get('http://localhost:5000/filter/getbyemail?email=' + email)
+			.then((res) => {
+				var blood = res.data.blood
+				if(blood.length) {
+					//Render existing info
+					this.setState({
+						currentUser: {
+							...currentUser,
+							info: {
+								fullName: blood[0].fullName,
+								address: blood[0].address,
+								age: blood[0].age,
+								bloodType: blood[0].bloodType,
+								height: blood[0].height,
+								weight: blood[0].weight
+							}
+						}
+					});
+				} else {
+					//please add info
+				}
+
+				//
+			}).catch((err) => {
+				console.log(err);
+			})
+	}
 	async addDonorInformation(data) {
 		var params = null;
+		var {currentUser} = this.state;
 		if(data.address != '') {
 			await axios.get('http://maps.googleapis.com/maps/api/geocode/json?address=' + data.address)
 				.then((res) => {
@@ -130,10 +147,12 @@ export class Dashboard extends Component {
 					if (results[0]) {
 						params = {
 							...data,
+							email: currentUser.email,
 							latitude: results[0].geometry.location.lat,
 							longitude: results[0].geometry.location.lng 
 						}
 					}
+					this.getUserInfo(currentUser.email);
 				}).catch((err) => {
 					console.log(err);
 				});
@@ -155,6 +174,7 @@ export class Dashboard extends Component {
 			});
 		}
 	}
+	/** END **/
 
 	logout() {
 		firebase.auth().signOut();
@@ -203,6 +223,7 @@ export class Dashboard extends Component {
 	}
 
 	render() {
+		var {currentUser, coords, showInfoWindow} = this.state;
 		return (
 			<div className="dashboard-container">
 				<div className="topbar">
@@ -218,31 +239,40 @@ export class Dashboard extends Component {
 						className="gmap-container"
 						width={'100%'}
 						height={'100%'}
-						lat={this.state.coords.lat}
-						lng={this.state.coords.lng}
+						lat={coords.lat}
+						lng={coords.lng}
 						zoom={12}
 						loadingMessage={'Be happy'}
 						params={this.state.params}
 						onMapCreated={this.onMapCreated}>
 
 						<Marker
-							lat={this.state.coords.lat}
-							lng={this.state.coords.lng}
+							lat={coords.lat}
+							lng={coords.lng}
 							draggable={false}
 							onDragEnd={this.onDragEnd}
-							onClick={this.onClickMarker} />
-						{this.state.showInfoWindow ?
+							onClick={() => this.setState({showInfoWindow: true})} />
+						{showInfoWindow ?
 							<InfoWindow
-								lat={this.state.coords.lat}
-								lng={this.state.coords.lng}
-								content={this.state.content}
+								lat={coords.lat}
+								lng={coords.lng}
+								content={
+									(currentUser.info ?
+										'<label>Fullname: </label>' + currentUser.info.fullName + '</br>' +
+										'<label>Address: </label>' + currentUser.info.address + '</br>' +
+										'<label>Age: </label>' + currentUser.info.age + '</br>' +
+										'<label>Blood type: </label>' + currentUser.info.bloodType + '</br>' +
+										'<label>Height: </label>' + currentUser.info.height + '</br>' +
+										'<label>Weight: </label>' + currentUser.info.weight + '</br>' : ''
+									)
+								}
 								options={{pixelOffset: new google.maps.Size(0,-37)}}
-								onCloseClick={this.onCloseClickInfoWindow}
+								onCloseClick={() => this.setState({showInfoWindow: false})}
 							/> : '' }
 
 						<Circle
-							lat={this.state.coords.lat}
-							lng={this.state.coords.lng}
+							lat={coords.lat}
+							lng={coords.lng}
 							radius={this.state.radius}/>
 					</Gmaps>
 				</div>
