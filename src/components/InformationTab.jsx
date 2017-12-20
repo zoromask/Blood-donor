@@ -11,9 +11,9 @@ class InformationTab extends Component{
         var {displayName, phoneNumber, info} = this.props.currentUser;
         this.setState({
             inputs: {
-                fullName: displayName,
+                fullName: info.fullName ? info.fullName : (displayName ? displayName : ''),
                 address: info.address ? info.address : '',
-                phone: phoneNumber ? phoneNumber : '0123456789',
+                phone: info.phone ? info.phone : (phoneNumber ? phoneNumber : ''),
                 age: info.age ? info.age : '',
                 bloodType: info.bloodType ? info.bloodType : 'A',
                 height: info.height ? info.height : 0,
@@ -22,13 +22,11 @@ class InformationTab extends Component{
         })
     }
     save(e) {
-        e.preventDefault();
         var {inputs} = this.state;
-        var error = this.props.addDonorInformation(inputs);
+        var error = this.props.editDonorInformation(inputs);
     }
     reset(e) {
         var {displayName, phoneNumber} = this.props.currentUser;
-        e.preventDefault();
         var resetInputs = {
             fullName: displayName,
             address: '',

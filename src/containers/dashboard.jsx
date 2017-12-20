@@ -35,7 +35,7 @@ export class Dashboard extends Component {
 		this.filterAddress = this.filterAddress.bind(this);
 		this.filterRadius = this.filterRadius.bind(this);
 		this.getUserInfo = this.getUserInfo.bind(this);
-		this.addDonorInformation =  this.addDonorInformation.bind(this);
+		this.editDonorInformation =  this.editDonorInformation.bind(this);
 	}
 
 	componentWillMount() {
@@ -119,25 +119,25 @@ export class Dashboard extends Component {
 						currentUser: {
 							...currentUser,
 							info: {
+								_id: blood[0]._id,
 								fullName: blood[0].fullName,
 								address: blood[0].address,
 								age: blood[0].age,
+								phone: blood[0].phone,
 								bloodType: blood[0].bloodType,
 								height: blood[0].height,
 								weight: blood[0].weight
 							}
 						}
-					});
+					})
 				} else {
 					//please add info
 				}
-
-				//
 			}).catch((err) => {
 				console.log(err);
 			})
 	}
-	async addDonorInformation(data) {
+	async editDonorInformation(data) {
 		var params = null;
 		var {currentUser} = this.state;
 		if(data.address != '') {
@@ -152,28 +152,25 @@ export class Dashboard extends Component {
 							longitude: results[0].geometry.location.lng 
 						}
 					}
-					this.getUserInfo(currentUser.email);
 				}).catch((err) => {
 					console.log(err);
 				});
 		}
 
 		if(params) {
-			await axios.post('http://localhost:5000/blood/add', querystring.stringify(params), {
-				headers: {
-					'crossDomain': true,
-					'Content-Type' : 'application/x-www-form-urlencoded'
-				}
-			}).then((res) => {
+			var url = (!currentUser.info) ? 'http://localhost:5000/blood/add' : 'http://localhost:5000/blood/update/' + currentUser.info._id;
+			await axios.put(url, querystring.stringify(params)).then((res) => {
 				if(res.data.errmsg) {
 					var error = res.data.errmsg;
 					console.log(error);
 				}
+				this.getUserInfo(currentUser.email);
 			}).catch((err) => {
 				error = err;
 			});
 		}
 	}
+	
 	/** END **/
 
 	logout() {
@@ -207,7 +204,7 @@ export class Dashboard extends Component {
 					<Tab tabName={'Information'} linkClassName={'link-class-1'}>
 						<InformationTab
 							currentUser={this.state.currentUser}
-							addDonorInformation={this.addDonorInformation}
+							editDonorInformation={this.editDonorInformation}
 						/>
 					</Tab>
 				</Tabs>);
@@ -261,6 +258,7 @@ export class Dashboard extends Component {
 										'<label>Fullname: </label>' + currentUser.info.fullName + '</br>' +
 										'<label>Address: </label>' + currentUser.info.address + '</br>' +
 										'<label>Age: </label>' + currentUser.info.age + '</br>' +
+										'<label>Phone: </label>' + currentUser.info.phone + '</br>' +
 										'<label>Blood type: </label>' + currentUser.info.bloodType + '</br>' +
 										'<label>Height: </label>' + currentUser.info.height + '</br>' +
 										'<label>Weight: </label>' + currentUser.info.weight + '</br>' : ''
