@@ -10,18 +10,29 @@ class InformationTab extends Component{
     }
     componentWillMount() {
         var {displayName, phoneNumber, info} = this.props.currentUser;
-        var info = {
-            fullName: info.fullName ? info.fullName : (displayName ? displayName : ''),
-            address: info.address ? info.address : '',
-            phone: info.phone ? info.phone : (phoneNumber ? phoneNumber : ''),
-            age: info.age ? info.age : '',
-            bloodType: info.bloodType ? info.bloodType : 'A',
-            height: info.height ? info.height : 0,
-            weight: info.weight ? info.weight : 0,
+        var data = {
+            fullName: displayName ? displayName : '',
+            address: '',
+            phone: phoneNumber ? phoneNumber : '',
+            age: 10,
+            bloodType: 'A',
+            height: 0,
+            weight: 0,
+        };
+        if(info) {
+            data = {
+                fullName: info.fullName ? info.fullName : (displayName ? displayName : ''),
+                address: info.address ? info.address : '',
+                phone: info.phone ? info.phone : (phoneNumber ? phoneNumber : ''),
+                age: info.age ? info.age : '',
+                bloodType: info.bloodType ? info.bloodType : 'A',
+                height: info.height ? info.height : 0,
+                weight: info.weight ? info.weight : 0,
+            }
         };
         this.setState({
-            inputs: info,
-            resetInputs: info
+            inputs: data,
+            resetInputs: data
         });
     }
     save(e) {
