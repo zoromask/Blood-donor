@@ -19,26 +19,56 @@ export class Dashboard extends Component {
 				lat: 51.5258541,
 				lng: -0.08040660000006028
 			},
+			donors: [ //array of donors
+				{
+					lat: 21.029011,
+					lng: 105.836020
+				},
+				{
+					lat: 21.029852,
+					lng: 105.832908
+				},
+				{
+					lat: 21.028410,
+					lng: 105.826106
+				},
+				{
+					lat: 21.032147,
+					lng: 105.833011
+				},
+				{
+					lat: 21.025646,
+					lng: 105.835354
+				}
+			],
 			mapKey: {
 				v: '3.exp',
 				key: 'AIzaSyC7-Y8Wp2q_4gYxOxgDFt5XSWbL_NNXjUI'
 			},
 			login: null,
-			radius: 0,
+			radius: 500,
 			currentUser: {
 				displayName: '',
 				email: '',
 				info: null	
 			},
+			currentInfoWindow: null,
 			showInfoWindow: false,
 		}
 		this.filterAddress = this.filterAddress.bind(this);
 		this.filterRadius = this.filterRadius.bind(this);
 		this.getUserInfo = this.getUserInfo.bind(this);
 		this.editDonorInformation =  this.editDonorInformation.bind(this);
+		this.auth = this.auth.bind(this);
+		this.openInfoWindow = this.openInfoWindow.bind(this);
 	}
 
-	componentWillMount() {
+	componentDidMount() {
+		this.auth();
+	}
+
+	/** AUTHENTICATION **/
+	auth() {
 		var {currentUser} = this.state;
 		setTimeout(() => {
 			firebase.auth().onAuthStateChanged((user) => {
@@ -60,16 +90,24 @@ export class Dashboard extends Component {
 			});
 		}, 1000);
 	}
+	/** END **/
 
+	/** MAP HANDLER **/
 	onMapCreated(map) {
 		map.setOptions({
 			disableDefaultUI: true
 		});
 	}
-
 	onDragEnd(e) {
 		console.log('onDragEnd', e);
 	}
+	openInfoWindow(donor) {
+		this.setState({
+			currentInfoWindow: donor,
+			showInfoWindow: true
+		});
+	}
+	/** END **/
 
 	/** HANDLE FILTER AUTOMATICALLY **/
 	filterAddress(address) {
@@ -120,6 +158,10 @@ export class Dashboard extends Component {
 				if(blood.length) {
 					//Render existing info
 					this.setState({
+						coords: {
+							lat: blood[0].latitude,
+							lng: blood[0].longitude
+						},
 						currentUser: {
 							...currentUser,
 							info: {
@@ -130,7 +172,9 @@ export class Dashboard extends Component {
 								phone: blood[0].phone,
 								bloodType: blood[0].bloodType,
 								height: blood[0].height,
-								weight: blood[0].weight
+								weight: blood[0].weight,
+								lat: blood[0].latitude,
+								lng: blood[0].longitude
 							}
 						}
 					})
@@ -185,7 +229,6 @@ export class Dashboard extends Component {
 
 		return error;
 	}
-	
 	/** END **/
 
 	logout() {
@@ -235,7 +278,7 @@ export class Dashboard extends Component {
 	}
 
 	render() {
-		var {currentUser, coords, showInfoWindow} = this.state;
+		var {coords, donors, currentInfoWindow, showInfoWindow} = this.state;
 		return (
 			<div className="dashboard-container">
 				<div className="topbar">
@@ -257,36 +300,44 @@ export class Dashboard extends Component {
 						loadingMessage={'Be happy'}
 						params={this.state.mapKey}
 						onMapCreated={this.onMapCreated}>
-
+						
 						<Marker
 							lat={coords.lat}
 							lng={coords.lng}
 							draggable={false}
 							onDragEnd={this.onDragEnd}
-							onClick={() => this.setState({showInfoWindow: true})} />
+							onClick={() => this.openInfoWindow(this.state.currentUser.info)}/>
+
+						{ donors.map(donor => {
+							return (
+								<Marker
+									key={donor.lat + donor.lng}
+									lat={donor.lat}
+									lng={donor.lng}
+									draggable={false}
+									onDragEnd={this.onDragEnd}
+									onClick={() => this.openInfoWindow(donor)} />
+							)
+						}) }
+
 						{showInfoWindow ?
 							<InfoWindow
-								lat={coords.lat}
-								lng={coords.lng}
+								lat={currentInfoWindow.lat}
+								lng={currentInfoWindow.lng}
 								content={
-									(currentUser.info ?
-										'<label>Fullname: </label>' + currentUser.info.fullName + '</br>' +
-										'<label>Address: </label>' + currentUser.info.address + '</br>' +
-										'<label>Age: </label>' + currentUser.info.age + '</br>' +
-										'<label>Phone: </label>' + currentUser.info.phone + '</br>' +
-										'<label>Blood type: </label>' + currentUser.info.bloodType + '</br>' +
-										'<label>Height: </label>' + currentUser.info.height + '</br>' +
-										'<label>Weight: </label>' + currentUser.info.weight + '</br>' : ''
+									(currentInfoWindow ?
+										'<label>Fullname: </label>' + currentInfoWindow.fullName + '</br>' +
+										'<label>Address: </label>' + currentInfoWindow.address + '</br>' +
+										'<label>Age: </label>' + currentInfoWindow.age + '</br>' +
+										'<label>Phone: </label>' + currentInfoWindow.phone + '</br>' +
+										'<label>Blood type: </label>' + currentInfoWindow.bloodType + '</br>' +
+										'<label>Height: </label>' + currentInfoWindow.height + '</br>' +
+										'<label>Weight: </label>' + currentInfoWindow.weight + '</br>' : ''
 									)
 								}
 								options={{pixelOffset: new google.maps.Size(0,-37)}}
 								onCloseClick={() => this.setState({showInfoWindow: false})}
 							/> : '' }
-
-						<Circle
-							lat={coords.lat}
-							lng={coords.lng}
-							radius={this.state.radius}/>
 					</Gmaps>
 				</div>
 			</div>

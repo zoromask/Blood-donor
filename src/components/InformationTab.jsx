@@ -4,21 +4,16 @@ class InformationTab extends Component{
     constructor(props){
         super(props);
         this.state = {
-            inputs: null,
-            resetInputs: null
+            inputs: null
         }
+        this.setData = this.setData.bind(this);
     }
     componentWillMount() {
+        this.setData();
+    }
+    setData() {
         var {displayName, phoneNumber, info} = this.props.currentUser;
-        var data = {
-            fullName: displayName ? displayName : '',
-            address: '',
-            phone: phoneNumber ? phoneNumber : '',
-            age: 10,
-            bloodType: 'A',
-            height: 0,
-            weight: 0,
-        };
+        var data = null;
         if(info) {
             data = {
                 fullName: info.fullName ? info.fullName : (displayName ? displayName : ''),
@@ -29,10 +24,19 @@ class InformationTab extends Component{
                 height: info.height ? info.height : 0,
                 weight: info.weight ? info.weight : 0,
             }
-        };
+        } else {
+            data = {
+                fullName: displayName ? displayName : '',
+                address: '',
+                phone: phoneNumber ? phoneNumber : '',
+                age: 10,
+                bloodType: 'A',
+                height: 0,
+                weight: 0,
+            };
+        }
         this.setState({
-            inputs: data,
-            resetInputs: data
+            inputs: data
         });
     }
     save(e) {
@@ -45,11 +49,6 @@ class InformationTab extends Component{
             }
         });
         
-    }
-    reset(e) {
-        var {displayName, phoneNumber} = this.props.currentUser;
-        var { resetInputs } = this.state;
-        this.setState({ inputs: { ...resetInputs } });
     }
     render() {
         var {displayName, phoneNumber} = this.props.currentUser;
@@ -99,7 +98,7 @@ class InformationTab extends Component{
                     </div >
                 </div>
                 <button type="button" className="button" onClick={(e) => this.save(e)}>Save</button>
-                <button type="button" className="button" onClick={(e) => this.reset(e)}>Reset</button>
+                <button type="button" className="button" onClick={(e) => this.setData(e)}>Reset</button>
             </div>
         )
     }
