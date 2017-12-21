@@ -1,12 +1,32 @@
 import { combineReducers } from 'redux';
-
-const login = (state = {}, action = {}) =>{
+const initialState = {
+	isLoggedIn: false,
+	user: {}
+}
+const login = (state = initialState, action = {}) =>{
 	switch(action.type){
 		case 'LOGIN':
 			return Object.assign({}, state, {
-				login: action.data
+				isLoggedIn: true,
+				user: action.data
 			})
-			break
+			break;
+		case 'IS_LOGIN':
+			if(action.user){
+				return Object.assign({}, state, {
+					isLoggedIn: true,
+					user: action.user
+				})	
+			}else{
+				return state
+			}
+			break;
+		case 'LOGOUT':
+			return Object.assign({}, state, {
+				isLoggedIn: false,
+				user: {}
+			})	
+			break;
 		default:
 			return state
 	}

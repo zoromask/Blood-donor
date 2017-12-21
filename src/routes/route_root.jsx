@@ -2,7 +2,7 @@ import asyncComponent from './async_component.jsx';
 
 import React from 'react';
 import { renderRoutes } from 'react-router-config'
-import App from '../components/app.jsx';
+import AppContainer from '../containers/AppContainer.jsx';
 
 import {
   BrowserRouter as Router,
@@ -28,7 +28,7 @@ const routes = [
 	// },
 	{
 		path: '/',
-		component: App,
+		component: AppContainer,
 		routes:[
 			{
 				path: '/',

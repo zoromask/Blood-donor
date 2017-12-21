@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
-import Tabs from '../components/Tabs.jsx';
-import Tab from '../components/Tab.jsx';
-import FilterTab from '../components/FilterTab.jsx';
-import InformationTab from '../components/InformationTab.jsx';
 import { Gmaps, Marker, InfoWindow, Circle } from 'react-gmaps';
-import InfoTab from '../components/SignupTab.jsx';
 import axios from 'axios';
-import fire from '../utility/firebase';
-import firebase from 'firebase';
 
+import { getUser, getIsLoggedIn} from '../selectors';
+import { connect } from 'react-redux';
+import LeftPanel from '../components/LeftPanel.jsx';
 export class Dashboard extends Component {
 
 	constructor(props, context) {
@@ -27,27 +23,6 @@ export class Dashboard extends Component {
 		}
 		this.filterAddress = this.filterAddress.bind(this);
 		this.filterRadius = this.filterRadius.bind(this);
-	}
-
-	componentWillMount() {
-		var me = this;
-		setTimeout(() => {
-			firebase.auth().onAuthStateChanged(function (user) {
-				if (user) {
-					me.setState({
-						login: true,
-						currentUser: {
-							displayName: user.displayName,
-						},
-					});
-				} else {
-					me.setState({
-						login: false,
-						currentUser: null
-					});
-				};
-			});
-		}, 1000);
 	}
 
 	onMapCreated(map) {
@@ -107,59 +82,14 @@ export class Dashboard extends Component {
 		// });
 	}
 
-	logout() {
-		firebase.auth().signOut();
-	}
-
-	statusTab(props) {
-		const isLoggedIn = props;
-		if (isLoggedIn === null) {
-			return (
-				<div className="load-wrapp">
-					<div className="load-5">
-						<div className="ring-2">
-							<div className="ball-holder">
-								<div className="ball"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			);
-		}
-		else if (isLoggedIn) {
-			return (
-				<Tabs defaultActiveTabIndex={0}>
-					<Tab tabName={'Filter'} linkClassName={'link-class-0'}>
-						<FilterTab
-							filterAddress={this.filterAddress}
-							filterRadius={this.filterRadius}
-						/>
-					</Tab>
-					<Tab tabName={'Information'} linkClassName={'link-class-1'}>
-						<InformationTab currentUser={this.state.currentUser} />
-					</Tab>
-				</Tabs>);
-		}
-		else {
-			return <InfoTab />;
-		}
-	}
-
-	logoutButton(loggedIn) {
-		if (loggedIn)
-			return (<span className="btn-logout" onClick={this.logout}> Logout </span>);
-	}
-
 	render() {
 		return (
 			<div className="dashboard-container">
-				<div className="topbar">
-					<span>Blood Donor Finder</span>
-					{this.logoutButton(this.state.login)}
-				</div>
+				
 				<div className="left-panel">
-
-					{this.statusTab(this.state.login)}
+					<LeftPanel {...this.props} 
+						filterRadius={this.filterRadius} 
+						filterAddress={this.filterAddress}/>
 				</div>
 				<div className="right-panel">
 					<Gmaps
@@ -192,6 +122,9 @@ export class Dashboard extends Component {
 	}
 };
 
+const mapStateToProps = state => ({
+	user: getUser(state),
+	isLoggedIn: getIsLoggedIn(state)
+})
 
-
-export default Dashboard;
+export default connect(mapStateToProps)(Dashboard);
