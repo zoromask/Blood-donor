@@ -2,15 +2,30 @@ import fire from '../utility/firebase';
 import firebase from 'firebase';
 import axios from 'axios';
 export const login = (params) => {
-	return{
-		type: 'LOGIN',
-		data: params
+	let provider
+	if(params === 'fb'){
+		provider = new firebase.auth.FacebookAuthProvider();
+	}else if(params === 'gp'){
+		provider = new firebase.auth.GoogleAuthProvider();;
 	}
+	return dispatch =>{
+		firebase.auth().signInWithPopup(provider).then(function(response){
+			dispatch({
+				type: 'LOGIN',
+				user: response.user
+			});
+		}, function(error){
+			console.log(error)
+		});	
+	}
+	
+	
 }
 
 export const isLogin = () =>{
 	return dispatch =>{
 		firebase.auth().onAuthStateChanged(function (user) {
+	
 			dispatch({
 				type: 'IS_LOGIN',
 				user: user
@@ -32,7 +47,4 @@ export const logout = () => {
 			console.log(error)
 		})	
 	}
-	
-
-	
 }

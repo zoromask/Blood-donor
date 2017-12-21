@@ -8,7 +8,7 @@ const login = (state = initialState, action = {}) =>{
 		case 'LOGIN':
 			return Object.assign({}, state, {
 				isLoggedIn: true,
-				user: action.data
+				user: action.user
 			})
 			break;
 		case 'IS_LOGIN':

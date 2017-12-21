@@ -3,6 +3,7 @@ import { Gmaps, Marker, InfoWindow, Circle } from 'react-gmaps';
 import axios from 'axios';
 
 import { getUser, getIsLoggedIn} from '../selectors';
+import {login} from '../actions';
 import { connect } from 'react-redux';
 import LeftPanel from '../components/LeftPanel.jsx';
 export class Dashboard extends Component {
@@ -126,5 +127,11 @@ const mapStateToProps = state => ({
 	user: getUser(state),
 	isLoggedIn: getIsLoggedIn(state)
 })
-
-export default connect(mapStateToProps)(Dashboard);
+const mapDispatchToProps = (dispatch) =>{
+	return {
+		login: (params) => {
+			dispatch(login(params))
+		}
+	}
+}
+export default connect(mapStateToProps,mapDispatchToProps)(Dashboard);

@@ -7,8 +7,7 @@ import FilterTab from './FilterTab.jsx';
 import InfoTab from './SignupTab.jsx'
 
 const LeftPanel = (props) => {
-	const {isLoggedIn, user, filterAddress, filterRadius} = props
-
+	const {isLoggedIn, user, filterAddress, filterRadius, login} = props
 	if(isLoggedIn){
 		return(
 			<Tabs defaultActiveTabIndex={0}>
@@ -19,13 +18,13 @@ const LeftPanel = (props) => {
 					/>
 				</Tab>
 				<Tab tabName={'Information'} linkClassName={'link-class-1'}>
-					<InformationTab currentUser={user} />
+					<InformationTab {...props} />
 				</Tab>
 			</Tabs>
 		)
 	}
 	return(
-		<InfoTab />
+		<InfoTab login={login} isLoggedIn={isLoggedIn}/>
 	)
 }
 export default LeftPanel;
