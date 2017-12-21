@@ -4,6 +4,7 @@ import Tab from '../components/Tab.jsx';
 import FilterTab from '../components/FilterTab.jsx';
 import InformationTab from '../components/InformationTab.jsx';
 import { Gmaps, Marker, InfoWindow, Circle } from 'react-gmaps';
+import '../utility/markerclusterer';
 import InfoTab from '../components/SignupTab.jsx';
 import axios from 'axios';
 import fire from '../utility/firebase';
@@ -55,6 +56,7 @@ export class Dashboard extends Component {
 			currentInfoWindow: null,
 			showInfoWindow: false,
 		}
+		this.onMapCreated = this.onMapCreated.bind(this);
 		this.filterAddress = this.filterAddress.bind(this);
 		this.filterRadius = this.filterRadius.bind(this);
 		this.getUserInfo = this.getUserInfo.bind(this);
@@ -97,6 +99,23 @@ export class Dashboard extends Component {
 		map.setOptions({
 			disableDefaultUI: true
 		});
+		// create new markerClusterer
+		var {donors} = this.state;
+		var markers = donors.map((donor) => {
+			return new google.maps.Marker({
+				map: map,
+				position: {lat: donor.lat, lng: donor.lng},
+				donor: donor	//insert donor information to marker ~ wow
+			})
+		});
+		new MarkerClusterer(map, markers, {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+
+		//Add marker click event
+		markers.map(marker => {
+			marker.addListener('click', () => {
+				this.openInfoWindow(marker.donor);
+			})
+		})
 	}
 	onDragEnd(e) {
 		console.log('onDragEnd', e);
@@ -299,7 +318,8 @@ export class Dashboard extends Component {
 						zoom={12}
 						loadingMessage={'Be happy'}
 						params={this.state.mapKey}
-						onMapCreated={this.onMapCreated}>
+						onMapCreated={this.onMapCreated}
+						onZoomChanged={() => this.setState({showInfoWindow: false})}>
 						
 						<Marker
 							lat={coords.lat}
@@ -307,18 +327,6 @@ export class Dashboard extends Component {
 							draggable={false}
 							onDragEnd={this.onDragEnd}
 							onClick={() => this.openInfoWindow(this.state.currentUser.info)}/>
-
-						{ donors.map(donor => {
-							return (
-								<Marker
-									key={donor.lat + donor.lng}
-									lat={donor.lat}
-									lng={donor.lng}
-									draggable={false}
-									onDragEnd={this.onDragEnd}
-									onClick={() => this.openInfoWindow(donor)} />
-							)
-						}) }
 
 						{showInfoWindow ?
 							<InfoWindow
