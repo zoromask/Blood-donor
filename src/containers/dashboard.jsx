@@ -132,7 +132,7 @@ export class Dashboard extends Component {
 	filterAddress(address) {
 		var { coords } = this.state;
 		if (address != '') {
-			axios.get('http://maps.googleapis.com/maps/api/geocode/json?address=' + address)
+			axios.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + address)
 				.then((res) => {
 					var { results } = res.data;
 					if (results[0]) {
@@ -171,7 +171,7 @@ export class Dashboard extends Component {
 	/** HANDLERS for INFORMATION TAB **/
 	getUserInfo(email) {
 		var {currentUser} = this.state;
-		axios.get('http://localhost:5000/filter/getbyemail?email=' + email)
+		axios.get('https://blood-donor-api.herokuapp.com/filter/getbyemail?email=' + email)
 			.then((res) => {
 				var blood = res.data.blood
 				if(blood.length) {
@@ -229,8 +229,9 @@ export class Dashboard extends Component {
 		}
 
 		if(params) {
-			var url = (!currentUser.info) ? 'http://localhost:5000/blood/add' : 'http://localhost:5000/blood/update/' + currentUser.info._id;
-			await axios.put(url, querystring.stringify(params)).then((res) => {
+			var url = (!currentUser.info) ? 'https://blood-donor-api.herokuapp.com/blood/add' : 'https://blood-donor-api.herokuapp.com/blood/update/' + currentUser.info._id;
+			var action = (!currentUser.info) ? axios.post : axios.put;
+			await action(url, querystring.stringify(params)).then((res) => {
 				if(res.data.errmsg) {
 					error = res.data.errmsg;
 				}
@@ -328,7 +329,7 @@ export class Dashboard extends Component {
 							onDragEnd={this.onDragEnd}
 							onClick={() => this.openInfoWindow(this.state.currentUser.info)}/>
 
-						{showInfoWindow ?
+						{showInfoWindow && currentInfoWindow ?
 							<InfoWindow
 								lat={currentInfoWindow.lat}
 								lng={currentInfoWindow.lng}
