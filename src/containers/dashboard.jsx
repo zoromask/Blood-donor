@@ -153,15 +153,12 @@ export class Dashboard extends Component {
 		var { lat, lng } = this.state.coords;
 		radius = parseInt(radius) * 100;
 		this.setState({ radius: radius });
-		// var {lat,lng} = this.state.coords;
-		// radius = parseInt(radius) * 100;
-		// this.setState({radius: radius});
 		// let url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+lat+','+lng+'&radius='+radius+'&key=' + this.state.mapKey.key;
 		// axios.request({
 		// 	url: url,
 		// 	method: 'get',
 		// 	// `headers` are custom headers to be sent
-		// 	headers: {'X-Requested-With': 'XMLHttpRequest'},
+  		// 	headers: {'X-Requested-With': 'XMLHttpRequest'},
 		// }).then((res) => {}).catch((err) => {
 		// 	console.log(err);
 		// });
