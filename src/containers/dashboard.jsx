@@ -90,9 +90,9 @@ export class Dashboard extends Component {
 		}
 	}
 	filterRadius(radius) {	//Unit: meter
-		// var {lat,lng} = this.state.coords;
-		// radius = parseInt(radius) * 100;
-		// this.setState({radius: radius});
+		var { lat, lng } = this.state.coords;
+		radius = parseInt(radius) * 100;
+		this.setState({ radius: radius });
 		// let url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+lat+','+lng+'&radius='+radius+'&key=' + this.state.mapKey.key;
 		// axios.request({
 		// 	url: url,
@@ -167,7 +167,7 @@ export class Dashboard extends Component {
 						lng={this.state.coords.lng}
 						zoom={12}
 						loadingMessage={'Be happy'}
-						params={this.state.params}
+						params={this.state.mapKey}
 						onMapCreated={this.onMapCreated}>
 
 						<Marker
