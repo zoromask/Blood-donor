@@ -57,8 +57,13 @@ export class Dashboard extends Component {
 				v: '3.exp',
 				key: 'AIzaSyC7-Y8Wp2q_4gYxOxgDFt5XSWbL_NNXjUI'
 			},
+			searchArea: {	
+				maxLat: 0,
+				minLat: 0,
+				minLong: 0,
+				maxLong: 0
+			},
 			login: null
-			
 		}
 		this.onMapCreated = this.onMapCreated.bind(this);
 		this.filterAddress = this.filterAddress.bind(this);
@@ -187,6 +192,14 @@ export class Dashboard extends Component {
 		//Reset markers
 		//this.state.markersCluster.clearMarkers();
 		// let url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+lat+','+lng+'&radius='+data.radius+'&key=' + this.state.mapKey.key;
+		this.setState({
+			searchArea: {	
+				maxLat: lat + data.radius/100,
+				minLat: lat - data.radius/100,
+				minLong: lng - data.radius/100,
+				maxLong: lng + data.radius/100
+			},
+		});
 		// axios.request({
 		// 	url: url,
 		// 	method: 'get',
@@ -305,6 +318,7 @@ export class Dashboard extends Component {
 				<Tabs defaultActiveTabIndex={0}>
 					<Tab tabName={'Filter'} linkClassName={'link-class-0'}>
 						<FilterTab
+							searchArea = {this.state.searchArea}
 							filterAddress={this.filterAddress}
 							filter={this.filter}
 						/>
