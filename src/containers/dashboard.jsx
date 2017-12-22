@@ -11,6 +11,8 @@ import fire from '../utility/firebase';
 import firebase from 'firebase';
 import querystring from 'query-string';
 
+import * as images from '../images/image';
+
 export class Dashboard extends Component {
 
 	constructor(props, context) {
@@ -42,12 +44,8 @@ export class Dashboard extends Component {
 					lng: 105.835354
 				}
 			],
-			mapKey: {
-				v: '3.exp',
-				key: 'AIzaSyC7-Y8Wp2q_4gYxOxgDFt5XSWbL_NNXjUI'
-			},
-			login: null,
-			radius: 500,
+			markers: null,
+			markersCluster: null,
 			currentUser: {
 				displayName: '',
 				email: '',
@@ -55,10 +53,16 @@ export class Dashboard extends Component {
 			},
 			currentInfoWindow: null,
 			showInfoWindow: false,
+			mapKey: {
+				v: '3.exp',
+				key: 'AIzaSyC7-Y8Wp2q_4gYxOxgDFt5XSWbL_NNXjUI'
+			},
+			login: null
+			
 		}
 		this.onMapCreated = this.onMapCreated.bind(this);
 		this.filterAddress = this.filterAddress.bind(this);
-		this.filterRadius = this.filterRadius.bind(this);
+		this.filter = this.filter.bind(this);
 		this.getUserInfo = this.getUserInfo.bind(this);
 		this.editDonorInformation =  this.editDonorInformation.bind(this);
 		this.auth = this.auth.bind(this);
@@ -99,6 +103,7 @@ export class Dashboard extends Component {
 		map.setOptions({
 			disableDefaultUI: true
 		});
+
 		// create new markerClusterer
 		var {donors} = this.state;
 		var markers = donors.map((donor) => {
@@ -108,14 +113,42 @@ export class Dashboard extends Component {
 				donor: donor	//insert donor information to marker ~ wow
 			})
 		});
-		new MarkerClusterer(map, markers, {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
-
+		var imageStyle = {
+			textColor: 'white',
+			textSize: 14,
+			width: 50,
+			height: 50,
+			backgroundPosition: 'center center'
+		}
+		this.setState({
+			markers: markers,
+			markersCluster: new MarkerClusterer(map, markers, {
+				styles: [
+					{
+						...imageStyle,
+						url: images.m1
+					}, {
+						...imageStyle,
+						url: images.m2
+					}, {
+						...imageStyle,
+						url: images.m3
+					}, {
+						...imageStyle,
+						url: images.m4
+					}, {
+						...imageStyle,
+						url: images.m5
+					}
+				]
+			})
+		});
 		//Add marker click event
-		markers.map(marker => {
+		this.state.markers.map(marker => {
 			marker.addListener('click', () => {
 				this.openInfoWindow(marker.donor);
-			})
-		})
+			});
+		});
 	}
 	onDragEnd(e) {
 		console.log('onDragEnd', e);
@@ -149,11 +182,11 @@ export class Dashboard extends Component {
 				});
 		}
 	}
-	filterRadius(radius) {	//Unit: meter
+	filter(data) {	//Unit: meter
 		var { lat, lng } = this.state.coords;
-		radius = parseInt(radius) * 100;
-		this.setState({ radius: radius });
-		// let url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+lat+','+lng+'&radius='+radius+'&key=' + this.state.mapKey.key;
+		//Reset markers
+		//this.state.markersCluster.clearMarkers();
+		// let url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+lat+','+lng+'&radius='+data.radius+'&key=' + this.state.mapKey.key;
 		// axios.request({
 		// 	url: url,
 		// 	method: 'get',
@@ -273,7 +306,7 @@ export class Dashboard extends Component {
 					<Tab tabName={'Filter'} linkClassName={'link-class-0'}>
 						<FilterTab
 							filterAddress={this.filterAddress}
-							filterRadius={this.filterRadius}
+							filter={this.filter}
 						/>
 					</Tab>
 					<Tab tabName={'Information'} linkClassName={'link-class-1'}>
@@ -303,7 +336,6 @@ export class Dashboard extends Component {
 					{this.logoutButton(this.state.login)}
 				</div>
 				<div className="left-panel">
-
 					{this.statusTab(this.state.login)}
 				</div>
 				<div className="right-panel">
