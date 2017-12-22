@@ -12,7 +12,6 @@ export class Tabs extends Component {
             success: false
         };
         this.handleTabClick = this.handleTabClick.bind(this);
-        this.debounce = this.debounce.bind(this);
         this.renderErrorMessage = this.renderErrorMessage.bind(this);
         this.renderSuccessMessage = this.renderSuccessMessage.bind(this);
     }
@@ -41,8 +40,6 @@ export class Tabs extends Component {
         const {activeTabIndex} = this.state;
         if(children[activeTabIndex]) {
             return React.cloneElement(children[activeTabIndex].props.children, {
-                submitData: this.submitData,
-                debounce: this.debounce,
                 renderErrorMessage: this.renderErrorMessage,
                 renderSuccessMessage: this.renderSuccessMessage
             });
@@ -62,49 +59,6 @@ export class Tabs extends Component {
             this.setState({ error: false });
         }, 4000)
     }
-
-    // Returns a function, that, as long as it continues to be invoked, will not
-    // be triggered. The function will be called after it stops being called for
-    // N milliseconds. If `immediate` is passed, trigger the function on the
-    // leading edge, instead of the trailing.
-    debounce(func, wait, immediate) {
-        var timeout;
-        return function() {
-            var context = this, args = arguments;
-            var later = function() {
-                timeout = null;
-                if (!immediate) func.apply(context, args);
-            };
-            var callNow = immediate && !timeout;
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-            if (callNow) func.apply(context, args);
-        };
-    };
-
-    //submit filtering/adding data
-    submitData(data) {
-        console.log(data);
-        axios.get('http://localhost:5000/filter/blood', {
-            params: {
-                bloodType: data.bloodType,
-                ageFrom: data.ages[0],
-                ageTo: data.ages[1],
-                longitudeMin: data.searchArea.minLong,
-                longitudeMax: data.searchArea.maxLong,
-                latitudeMin: data.searchArea.minLat,
-                latitudeMax: data.searchArea.maxLat
-            }
-            })
-            .then(function (response) {
-                console.log("succeed");
-                console.log(response);
-            })
-            .catch(function (error) {
-                console.log('error');
-                console.log(error);
-            });
-        }
   
     render() {
         return (

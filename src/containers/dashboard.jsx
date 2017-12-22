@@ -13,37 +13,16 @@ import querystring from 'query-string';
 
 import * as images from '../images/image';
 
+import * as Helpers from '../utility/helper';
+
 export class Dashboard extends Component {
 
 	constructor(props, context) {
 		super(props, context);
 		this.state = {
-			coords: {
-				lat: 51.5258541,
-				lng: -0.08040660000006028
-			},
-			donors: [ //array of donors
-				{
-					lat: 21.029011,
-					lng: 105.836020
-				},
-				{
-					lat: 21.029852,
-					lng: 105.832908
-				},
-				{
-					lat: 21.028410,
-					lng: 105.826106
-				},
-				{
-					lat: 21.032147,
-					lng: 105.833011
-				},
-				{
-					lat: 21.025646,
-					lng: 105.835354
-				}
-			],
+			map: null,
+			coords: null,
+			donors: [],
 			markers: null,
 			markersCluster: null,
 			currentUser: {
@@ -57,12 +36,6 @@ export class Dashboard extends Component {
 				v: '3.exp',
 				key: 'AIzaSyC7-Y8Wp2q_4gYxOxgDFt5XSWbL_NNXjUI'
 			},
-			searchArea: {	
-				maxLat: 0,
-				minLat: 0,
-				minLong: 0,
-				maxLong: 0
-			},
 			login: null
 		}
 		this.onMapCreated = this.onMapCreated.bind(this);
@@ -72,6 +45,8 @@ export class Dashboard extends Component {
 		this.editDonorInformation =  this.editDonorInformation.bind(this);
 		this.auth = this.auth.bind(this);
 		this.openInfoWindow = this.openInfoWindow.bind(this);
+		this.createMarkers = this.createMarkers.bind(this);
+		this.deleteMarkers = this.deleteMarkers.bind(this);
 	}
 
 	componentDidMount() {
@@ -105,55 +80,8 @@ export class Dashboard extends Component {
 
 	/** MAP HANDLER **/
 	onMapCreated(map) {
-		map.setOptions({
-			disableDefaultUI: true
-		});
-
-		// create new markerClusterer
-		var {donors} = this.state;
-		var markers = donors.map((donor) => {
-			return new google.maps.Marker({
-				map: map,
-				position: {lat: donor.lat, lng: donor.lng},
-				donor: donor	//insert donor information to marker ~ wow
-			})
-		});
-		var imageStyle = {
-			textColor: 'white',
-			textSize: 14,
-			width: 50,
-			height: 50,
-			backgroundPosition: 'center center'
-		}
-		this.setState({
-			markers: markers,
-			markersCluster: new MarkerClusterer(map, markers, {
-				styles: [
-					{
-						...imageStyle,
-						url: images.m1
-					}, {
-						...imageStyle,
-						url: images.m2
-					}, {
-						...imageStyle,
-						url: images.m3
-					}, {
-						...imageStyle,
-						url: images.m4
-					}, {
-						...imageStyle,
-						url: images.m5
-					}
-				]
-			})
-		});
-		//Add marker click event
-		this.state.markers.map(marker => {
-			marker.addListener('click', () => {
-				this.openInfoWindow(marker.donor);
-			});
-		});
+		map.setOptions({ disableDefaultUI: true });
+		this.setState({ map: map });
 	}
 	onDragEnd(e) {
 		console.log('onDragEnd', e);
@@ -163,6 +91,65 @@ export class Dashboard extends Component {
 			currentInfoWindow: donor,
 			showInfoWindow: true
 		});
+	}
+	createMarkers() {
+		// remove old markers
+		this.deleteMarkers();
+
+		// create new markers
+		var {donors, map} = this.state;
+		if(donors.length) {
+			var markers = donors.map((donor) => {
+				return new google.maps.Marker({
+					map: map,
+					position: {lat: donor.latitude, lng: donor.longtitude},
+					donor: donor	//insert donor information to marker ~ wow
+				})
+			});
+			var imageStyle = {
+				textColor: 'white',
+				textSize: 14,
+				width: 50,
+				height: 50,
+				backgroundPosition: 'center center'
+			}
+			this.setState({
+				markers: markers,
+				markersCluster: new MarkerClusterer(map, markers, {
+					styles: [
+						{
+							...imageStyle,
+							url: images.m1
+						}, {
+							...imageStyle,
+							url: images.m2
+						}, {
+							...imageStyle,
+							url: images.m3
+						}, {
+							...imageStyle,
+							url: images.m4
+						}, {
+							...imageStyle,
+							url: images.m5
+						}
+					]
+				})
+			});
+			//Add marker click event
+			this.state.markers.map(marker => {
+				marker.addListener('click', () => {
+					this.openInfoWindow(marker.donor);
+				});
+			});
+		}
+	}
+	deleteMarkers() {
+		var {markers, markersCluster} = this.state;
+		if(markers) {
+			markers.map(marker => { marker.setMap(null); });
+			markersCluster.clearMarkers();
+		}
 	}
 	/** END **/
 
@@ -188,26 +175,31 @@ export class Dashboard extends Component {
 		}
 	}
 	filter(data) {	//Unit: meter
-		var { lat, lng } = this.state.coords;
-		//Reset markers
-		//this.state.markersCluster.clearMarkers();
-		// let url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+lat+','+lng+'&radius='+data.radius+'&key=' + this.state.mapKey.key;
-		this.setState({
-			searchArea: {	
-				maxLat: lat + data.radius/100,
-				minLat: lat - data.radius/100,
-				minLong: lng - data.radius/100,
-				maxLong: lng + data.radius/100
-			},
-		});
-		// axios.request({
-		// 	url: url,
-		// 	method: 'get',
-		// 	// `headers` are custom headers to be sent
-  		// 	headers: {'X-Requested-With': 'XMLHttpRequest'},
-		// }).then((res) => {}).catch((err) => {
-		// 	console.log(err);
-		// });
+		var { coords, donors } = this.state;
+		if(coords) {
+			var { caculateDestionationPoint } = Helpers;
+			var tempDonors = new Array();
+			this.createMarkers();
+			axios.get('https://blood-donor-api.herokuapp.com/filter/blood', {
+				params: {
+					bloodType: data.bloodType,
+					ageFrom: data.minAge,
+					ageTo: data.maxAge,
+					longitudeMin: caculateDestionationPoint(coords, -90, data.radius).lng,
+					longitudeMax: caculateDestionationPoint(coords, 90, data.radius).lng,
+					latitudeMin: caculateDestionationPoint(coords, -180, data.radius).lat,
+					latitudeMax: caculateDestionationPoint(coords, 0, data.radius).lat,
+				}
+			}).then((res) => {
+				if(res.data.blood.lengh) {
+					this.setState({
+						donors: res.data.blood
+					})
+				}
+			}).catch((err) => {
+				console.log(err);
+			});
+		}
 	}
 	/** END **/
 
@@ -342,7 +334,7 @@ export class Dashboard extends Component {
 	}
 
 	render() {
-		var {coords, donors, currentInfoWindow, showInfoWindow} = this.state;
+		var {coords, donors, currentInfoWindow, showInfoWindow, radius} = this.state;
 		return (
 			<div className="dashboard-container">
 				<div className="topbar">
@@ -353,44 +345,46 @@ export class Dashboard extends Component {
 					{this.statusTab(this.state.login)}
 				</div>
 				<div className="right-panel">
-					<Gmaps
-						className="gmap-container"
-						width={'100%'}
-						height={'100%'}
-						lat={coords.lat}
-						lng={coords.lng}
-						zoom={12}
-						loadingMessage={'Be happy'}
-						params={this.state.mapKey}
-						onMapCreated={this.onMapCreated}
-						onZoomChanged={() => this.setState({showInfoWindow: false})}>
-						
-						<Marker
+					{coords ?
+						<Gmaps
+							className="gmap-container"
+							width={'100%'}
+							height={'100%'}
 							lat={coords.lat}
 							lng={coords.lng}
-							draggable={false}
-							onDragEnd={this.onDragEnd}
-							onClick={() => this.openInfoWindow(this.state.currentUser.info)}/>
+							zoom={12}
+							loadingMessage={'Be happy'}
+							params={this.state.mapKey}
+							onMapCreated={this.onMapCreated}
+							onZoomChanged={() => this.setState({showInfoWindow: false})}>
+							
+							<Marker
+								lat={coords.lat}
+								lng={coords.lng}
+								draggable={false}
+								onDragEnd={this.onDragEnd}
+								onClick={() => this.openInfoWindow(this.state.currentUser.info)}/>
 
-						{showInfoWindow && currentInfoWindow ?
-							<InfoWindow
-								lat={currentInfoWindow.lat}
-								lng={currentInfoWindow.lng}
-								content={
-									(currentInfoWindow ?
-										'<label>Fullname: </label>' + currentInfoWindow.fullName + '</br>' +
-										'<label>Address: </label>' + currentInfoWindow.address + '</br>' +
-										'<label>Age: </label>' + currentInfoWindow.age + '</br>' +
-										'<label>Phone: </label>' + currentInfoWindow.phone + '</br>' +
-										'<label>Blood type: </label>' + currentInfoWindow.bloodType + '</br>' +
-										'<label>Height: </label>' + currentInfoWindow.height + '</br>' +
-										'<label>Weight: </label>' + currentInfoWindow.weight + '</br>' : ''
-									)
-								}
-								options={{pixelOffset: new google.maps.Size(0,-37)}}
-								onCloseClick={() => this.setState({showInfoWindow: false})}
-							/> : '' }
-					</Gmaps>
+							{showInfoWindow && currentInfoWindow ?
+								<InfoWindow
+									lat={currentInfoWindow.latitude}
+									lng={currentInfoWindow.longitude}
+									content={
+										(currentInfoWindow ?
+											'<label>Fullname: </label>' + currentInfoWindow.fullName + '</br>' +
+											'<label>Address: </label>' + currentInfoWindow.address + '</br>' +
+											'<label>Age: </label>' + currentInfoWindow.age + '</br>' +
+											'<label>Phone: </label>' + currentInfoWindow.phone + '</br>' +
+											'<label>Blood type: </label>' + currentInfoWindow.bloodType + '</br>' +
+											'<label>Height: </label>' + currentInfoWindow.height + '</br>' +
+											'<label>Weight: </label>' + currentInfoWindow.weight + '</br>' : ''
+										)
+									}
+									options={{pixelOffset: new google.maps.Size(0,-37)}}
+									onCloseClick={() => this.setState({showInfoWindow: false})}
+								/> : '' }
+						</Gmaps> : 'Loading..'
+					}
 				</div>
 			</div>
 		)
