@@ -67,7 +67,7 @@ class FilterTab extends Component{
 
         var radiusSlider = document.getElementById('radiusRange');        
         noUiSlider.create(radiusSlider, {
-            start: [0],
+            start: [1],
             connect: [true, false],
             step: 1,
             range: {
