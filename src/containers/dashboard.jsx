@@ -102,7 +102,7 @@ export class Dashboard extends Component {
 			var markers = donors.map((donor) => {
 				return new google.maps.Marker({
 					map: map,
-					position: {lat: donor.latitude, lng: donor.longtitude},
+					position: {lat: donor.latitude, lng: donor.longitude},
 					donor: donor	//insert donor information to marker ~ wow
 				})
 			});
@@ -227,11 +227,14 @@ export class Dashboard extends Component {
 								bloodType: blood[0].bloodType,
 								height: blood[0].height,
 								weight: blood[0].weight,
-								lat: blood[0].latitude,
-								lng: blood[0].longitude
+								latitude: blood[0].latitude,
+								longitude: blood[0].longitude
 							}
 						}
-					})
+					});
+					this.setState({
+						currentInfoWindow: this.state.currentUser.info
+					});
 				} else {
 					//please add info
 				}
