@@ -16,12 +16,14 @@ import * as images from '../images/image';
 import * as Helpers from '../utility/helper';
 
 export class Dashboard extends Component {
-
 	constructor(props, context) {
 		super(props, context);
 		this.state = {
 			map: null,
-			coords: null,
+			coords: {
+				lat: '21.0245',
+				lng: '105.84117'
+			},
 			donors: [],
 			markers: null,
 			markersCluster: null,
@@ -55,14 +57,13 @@ export class Dashboard extends Component {
 
 	/** AUTHENTICATION **/
 	auth() {
-		var {currentUser} = this.state;
 		setTimeout(() => {
 			firebase.auth().onAuthStateChanged((user) => {
 				if (user) {
 					this.setState({
 						login: true,
 						currentUser: {
-							...currentUser,
+							...this.state.currentUser,
 							displayName: user.displayName,
 							email: user.email
 						}
@@ -154,16 +155,15 @@ export class Dashboard extends Component {
 	/** END **/
 
 	/** HANDLE FILTER AUTOMATICALLY **/
-	filterAddress(address) {
-		var { coords } = this.state;
-		if (address != '') {
-			axios.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + address)
+	async filterAddress(data) {
+		if (data.address != '') {
+			await axios.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + data.address)
 				.then((res) => {
 					var { results } = res.data;
 					if (results[0]) {
 						this.setState({
 							coords: {
-								...coords,
+								...this.state.coords,
 								lat: results[0].geometry.location.lat,
 								lng: results[0].geometry.location.lng
 							}
@@ -172,40 +172,42 @@ export class Dashboard extends Component {
 				}).catch((err) => {
 					console.log(err);
 				});
+
+			this.filter(data);
 		}
 	}
 	filter(data) {	//Unit: meter
 		var { coords, donors } = this.state;
-		if(coords) {
-			var { caculateDestionationPoint } = Helpers;
-			var tempDonors = new Array();
+		var { caculateDestionationPoint } = Helpers;
+		axios.get('https://blood-donor-api.herokuapp.com/filter/blood', {
+			params: {
+				bloodType: data.bloodType,
+				ageFrom: data.minAge,
+				ageTo: data.maxAge,
+				longitudeMin: caculateDestionationPoint(coords, -90, data.radius).lng,
+				longitudeMax: caculateDestionationPoint(coords, 90, data.radius).lng,
+				latitudeMin: caculateDestionationPoint(coords, -180, data.radius).lat,
+				latitudeMax: caculateDestionationPoint(coords, 0, data.radius).lat,
+			}
+		}).then((res) => {
+			if(res.data.blood.length) {
+				this.setState({
+					donors: res.data.blood
+				})
+			} else {
+				this.setState({
+					donors: []
+				})
+			}
 			this.createMarkers();
-			axios.get('https://blood-donor-api.herokuapp.com/filter/blood', {
-				params: {
-					bloodType: data.bloodType,
-					ageFrom: data.minAge,
-					ageTo: data.maxAge,
-					longitudeMin: caculateDestionationPoint(coords, -90, data.radius).lng,
-					longitudeMax: caculateDestionationPoint(coords, 90, data.radius).lng,
-					latitudeMin: caculateDestionationPoint(coords, -180, data.radius).lat,
-					latitudeMax: caculateDestionationPoint(coords, 0, data.radius).lat,
-				}
-			}).then((res) => {
-				if(res.data.blood.lengh) {
-					this.setState({
-						donors: res.data.blood
-					})
-				}
-			}).catch((err) => {
-				console.log(err);
-			});
-		}
+		}).catch((err) => {
+			console.log(err);
+		});
 	}
 	/** END **/
 
 	/** HANDLERS for INFORMATION TAB **/
 	getUserInfo(email) {
-		var {currentUser} = this.state;
 		axios.get('https://blood-donor-api.herokuapp.com/filter/getbyemail?email=' + email)
 			.then((res) => {
 				var blood = res.data.blood
@@ -217,7 +219,7 @@ export class Dashboard extends Component {
 							lng: blood[0].longitude
 						},
 						currentUser: {
-							...currentUser,
+							...this.state.currentUser,
 							info: {
 								_id: blood[0]._id,
 								fullName: blood[0].fullName,

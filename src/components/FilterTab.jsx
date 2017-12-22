@@ -26,22 +26,19 @@ class FilterTab extends Component{
 
     //Bloody Type on change
     bloodyTypeOnChange(e) {
-        var { inputs } = this.state;
-        this.setState({inputs: {...inputs, bloodType: e.target.value}});
-        this.props.filter(inputs);
+        this.setState({inputs: {...this.state.inputs, bloodType: e.target.value}});
+        this.props.filter(this.state.inputs);
     }
     //Address on change
     addressOnChange() {
-        var { inputs } = this.state;
         var { filterAddress } = this.props;
         document.getElementById('addressInput').addEventListener('input', debounce((e) => {
-            this.setState({inputs: {...inputs, address: e.target.value}});
-            this.props.filterAddress(e.target.value);
+            this.setState({inputs: {...this.state.inputs, address: e.target.value}});
+            this.props.filterAddress(this.state.inputs);
         }, 300));
     }
     //Create range sliders & Handle ranges on change
     initializeRangeSlider() {
-        var { inputs } = this.state;
         var ageSlider = document.getElementById('ageRange');
         noUiSlider.create(ageSlider, {
             start: [10, 50],
@@ -60,7 +57,7 @@ class FilterTab extends Component{
             ageText.innerHTML = ageSlider.noUiSlider.get()[0] + ' - ' + ageSlider.noUiSlider.get()[1];
             this.setState({
                 inputs: {
-                    ...inputs, 
+                    ...this.state.inputs, 
                     minAge: parseInt(ageSlider.noUiSlider.get()[0]),
                     maxAge: parseInt(ageSlider.noUiSlider.get()[1])
                 }
@@ -84,7 +81,7 @@ class FilterTab extends Component{
         radiusSlider.noUiSlider.target.addEventListener('click', debounce((values, handle) => {
             var value = radiusSlider.noUiSlider.get();
             radiusText.innerHTML = value;
-            this.setState({inputs: {...inputs, radius: parseInt(value)}});
+            this.setState({inputs: {...this.state.inputs, radius: parseInt(value)}});
             this.props.filter(this.state.inputs);
         },50));
     }
