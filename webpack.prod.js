@@ -35,7 +35,7 @@ module.exports = {
     ]
   },
   plugins: [HtmlWebpackPluginConfig, new UglifyJSPlugin(), webpackConfig],
-  devtool: '#eval-source-map',
+  // devtool: '#eval-source-map',
   devServer: {
   	port: port,
     historyApiFallback: true,
