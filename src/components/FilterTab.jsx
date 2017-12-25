@@ -26,16 +26,32 @@ class FilterTab extends Component{
 
     //Bloody Type on change
     bloodyTypeOnChange(e) {
-        this.setState({inputs: {...this.state.inputs, bloodType: e.target.value}});
-        this.props.filter(this.state.inputs);
+        this.setState({inputs: {...this.state.inputs, bloodType: e.target.value}}, () => {
+            this.props.filter(this.state.inputs);
+        });
     }
     //Address on change
     addressOnChange() {
+        var $addressInput = document.getElementById('filterAddressInput');
         var { filterAddress } = this.props;
-        document.getElementById('addressInput').addEventListener('input', debounce((e) => {
-            this.setState({inputs: {...this.state.inputs, address: e.target.value}});
-            this.props.filterAddress(this.state.inputs);
-        }, 300));
+
+        var autocomplete = new google.maps.places.Autocomplete($addressInput);
+        // Bind the map's bounds (viewport) property to the autocomplete object,
+        // so that the autocomplete requests use the current map bounds for the
+        // bounds option in the request.
+        autocomplete.bindTo('bounds', this.props.map);
+        autocomplete.addListener('place_changed', () => {
+            var place = autocomplete.getPlace();
+            if(place.geometry) {
+                this.setState({ 
+                    inputs: {
+                        ...this.state.inputs,
+                        address: place.name
+                    }}, () => {
+                        filterAddress(this.state.inputs, place.geometry.location);
+                    });
+            }
+        })
     }
     //Create range sliders & Handle ranges on change
     initializeRangeSlider() {
@@ -53,7 +69,7 @@ class FilterTab extends Component{
 
         var ageText = document.getElementById('ageText');
         ageText.innerHTML = ageSlider.noUiSlider.get()[0] + ' - ' + ageSlider.noUiSlider.get()[1];
-        ageSlider.noUiSlider.target.addEventListener('click', debounce((values, handle) => {
+        ageSlider.noUiSlider.on('change', debounce((values, handle) => {
             ageText.innerHTML = ageSlider.noUiSlider.get()[0] + ' - ' + ageSlider.noUiSlider.get()[1];
             this.setState({
                 inputs: {
@@ -61,8 +77,9 @@ class FilterTab extends Component{
                     minAge: parseInt(ageSlider.noUiSlider.get()[0]),
                     maxAge: parseInt(ageSlider.noUiSlider.get()[1])
                 }
+            }, () => {
+                this.props.filter(this.state.inputs);
             });
-            this.props.filter(this.state.inputs);
         },50));
 
         var radiusSlider = document.getElementById('radiusRange');        
@@ -78,11 +95,12 @@ class FilterTab extends Component{
         })
         var radiusText = document.getElementById('radiusText');
         radiusText.innerHTML = radiusSlider.noUiSlider.get();
-        radiusSlider.noUiSlider.target.addEventListener('click', debounce((values, handle) => {
+        radiusSlider.noUiSlider.on('change', debounce((values, handle) => {
             var value = radiusSlider.noUiSlider.get();
             radiusText.innerHTML = value;
-            this.setState({inputs: {...this.state.inputs, radius: parseInt(value)}});
-            this.props.filter(this.state.inputs);
+            this.setState({inputs: {...this.state.inputs, radius: parseInt(value)}}, () => {
+                this.props.filter(this.state.inputs);
+            });
         },50));
     }
     formatRange() {
@@ -112,7 +130,7 @@ class FilterTab extends Component{
 
                 <div className="infoTab-field-item">
                     <label className="field-title">Address: </label >
-                    <input id="addressInput" type="text" name="address" className="text-field" required/>
+                    <input id="filterAddressInput" type="text" name="address" className="text-field" required/>
                 </div>
 
                 <div className="infoTab-field-item filter-range">

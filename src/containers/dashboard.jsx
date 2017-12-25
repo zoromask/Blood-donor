@@ -146,6 +146,7 @@ export class Dashboard extends Component {
 		}
 	}
 	deleteMarkers() {
+		this.setState({showInfoWindow: false});
 		var {markers, markersCluster} = this.state;
 		if(markers) {
 			markers.map(marker => { marker.setMap(null); });
@@ -155,26 +156,15 @@ export class Dashboard extends Component {
 	/** END **/
 
 	/** HANDLE FILTER AUTOMATICALLY **/
-	async filterAddress(data) {
-		if (data.address != '') {
-			await axios.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + data.address)
-				.then((res) => {
-					var { results } = res.data;
-					if (results[0]) {
-						this.setState({
-							coords: {
-								...this.state.coords,
-								lat: results[0].geometry.location.lat,
-								lng: results[0].geometry.location.lng
-							}
-						});
-					}
-				}).catch((err) => {
-					console.log(err);
-				});
-
-			this.filter(data);
-		}
+	async filterAddress(data, location) {
+		this.setState({
+			coords: {
+				...this.state.coords,
+				lat: location.lat(),
+				lng: location.lng()
+			}
+		});
+		this.filter(data);
 	}
 	filter(data) {	//Unit: meter
 		var { coords, donors } = this.state;
@@ -233,9 +223,10 @@ export class Dashboard extends Component {
 								longitude: blood[0].longitude
 							}
 						}
-					});
-					this.setState({
-						currentInfoWindow: this.state.currentUser.info
+					}, () => {
+						this.setState({
+							currentInfoWindow: this.state.currentUser.info
+						});
 					});
 				} else {
 					//please add info
@@ -248,24 +239,34 @@ export class Dashboard extends Component {
 		var params = null;
 		var error = 0;
 		var {currentUser} = this.state;
-		if(data.address != '') {
-			await axios.get('http://maps.googleapis.com/maps/api/geocode/json?address=' + data.address)
-				.then((res) => {
-					var { results } = res.data;
-					if (results[0]) {
-						params = {
-							...data,
-							email: currentUser.email,
-							latitude: results[0].geometry.location.lat,
-							longitude: results[0].geometry.location.lng 
-						}
-					}
-				}).catch((err) => {
-					error = 1;
-					console.log(err);
-				});
+		if(data.location) {
+			params = {
+				...data,
+				email: currentUser.email,
+				latitude: data.location.lat(),
+				longitude: data.location.lng()
+			}
+			delete params['location'];
 		} else {
-			error = 1;
+			if(data.address != '') {
+				await axios.get('http://maps.googleapis.com/maps/api/geocode/json?address=' + data.address)
+					.then((res) => {
+						var { results } = res.data;
+						if (results[0]) {
+							params = {
+								...data,
+								email: currentUser.email,
+								latitude: results[0].geometry.location.lat,
+								longitude: results[0].geometry.location.lng 
+							}
+						}
+					}).catch((err) => {
+						error = 1;
+						console.log(err);
+					});
+			} else {
+				error = 1;
+			}
 		}
 
 		if(params) {
@@ -315,6 +316,7 @@ export class Dashboard extends Component {
 				<Tabs defaultActiveTabIndex={0}>
 					<Tab tabName={'Filter'} linkClassName={'link-class-0'}>
 						<FilterTab
+							map = {this.state.map}
 							searchArea = {this.state.searchArea}
 							filterAddress={this.filterAddress}
 							filter={this.filter}
@@ -322,6 +324,7 @@ export class Dashboard extends Component {
 					</Tab>
 					<Tab tabName={'Information'} linkClassName={'link-class-1'}>
 						<InformationTab
+							map = {this.state.map}
 							currentUser={this.state.currentUser}
 							editDonorInformation={this.editDonorInformation}
 						/>
@@ -339,7 +342,7 @@ export class Dashboard extends Component {
 	}
 
 	render() {
-		var {coords, donors, currentInfoWindow, showInfoWindow, radius} = this.state;
+		var {coords, donors, currentUser, currentInfoWindow, showInfoWindow, radius} = this.state;
 		return (
 			<div className="dashboard-container">
 				<div className="topbar">
@@ -364,8 +367,8 @@ export class Dashboard extends Component {
 							onZoomChanged={() => this.setState({showInfoWindow: false})}>
 							
 							<Marker
-								lat={coords.lat}
-								lng={coords.lng}
+								lat={(currentUser.info) ? currentUser.info.latitude : coords.lat}
+								lng={(currentUser.info) ? currentUser.info.longitude : coords.lng}
 								draggable={false}
 								onDragEnd={this.onDragEnd}
 								onClick={() => this.openInfoWindow(this.state.currentUser.info)}/>

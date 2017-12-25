@@ -7,9 +7,36 @@ class InformationTab extends Component{
             inputs: null
         }
         this.setData = this.setData.bind(this);
+        this.addressOnChange = this.addressOnChange.bind(this);
     }
     componentWillMount() {
         this.setData();
+    }
+    componentDidMount() {
+        this.addressOnChange();
+    }
+    addressOnChange() {
+        var $addressInput = document.getElementById('infoAddressInput');
+        var autocomplete = new google.maps.places.Autocomplete($addressInput);
+        // Bind the map's bounds (viewport) property to the autocomplete object,
+        // so that the autocomplete requests use the current map bounds for the
+        // bounds option in the request.
+        autocomplete.bindTo('bounds', this.props.map);
+        autocomplete.addListener('place_changed', () => {
+            var place = autocomplete.getPlace();
+            if(place.geometry) {
+                this.setState({ 
+                    inputs: {
+                        ...this.state.inputs,
+                        location: place.geometry.location
+                }});
+            }
+            this.setState({ 
+                inputs: {
+                    ...this.state.inputs,
+                    address: place.name 
+            }});
+        })
     }
     setData() {
         var {displayName, phoneNumber, info} = this.props.currentUser;
@@ -48,7 +75,6 @@ class InformationTab extends Component{
                 this.props.renderSuccessMessage();
             }
         });
-        
     }
     render() {
         var {displayName, phoneNumber} = this.props.currentUser;
@@ -63,7 +89,7 @@ class InformationTab extends Component{
                     </div>
                     <div className="infoTab-field-item">
                         <label className="field-title"> Address </label>
-                        <input type="text" className ="text-field" value={inputs.address}
+                        <input type="text" id="infoAddressInput" className ="text-field" value={inputs.address}
                             onChange={(e) => this.setState({inputs: {...inputs, address: e.target.value}})}/>
                     </div>
                     <div className="infoTab-field-item">
