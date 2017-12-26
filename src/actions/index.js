@@ -48,3 +48,10 @@ export const logout = () => {
 		})	
 	}
 }
+
+export const addInfo = (params) => {
+	return {
+		type: 'ADD_INFORMATION',
+		payload: axios.post('http://localhost:5000/blood/add', params)
+	}
+}
