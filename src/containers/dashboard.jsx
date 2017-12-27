@@ -249,7 +249,7 @@ export class Dashboard extends Component {
 			delete params['location'];
 		} else {
 			if(data.address != '') {
-				await axios.get('http://maps.googleapis.com/maps/api/geocode/json?address=' + data.address)
+				await axios.get('https://maps.googleapis.com/maps/api/geocode/json?address=' + data.address)
 					.then((res) => {
 						var { results } = res.data;
 						if (results[0]) {

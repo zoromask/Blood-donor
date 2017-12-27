@@ -10,6 +10,6 @@ export const login = (params) => {
 export const addInfo = (params) => {
 	return {
 		type: 'ADD_INFORMATION',
-		payload: axios.post('http://localhost:5000/blood/add', params)
+		payload: axios.post('https://blood-donor-api.herokuapp.com/blood/add', params)
 	}
 }
