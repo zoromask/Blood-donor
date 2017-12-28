@@ -20,8 +20,7 @@ import * as Helpers from '../utility/helper';
 export class Dashboard extends Component {
 	constructor(props, context) {
 		super(props, context);
-		this.state = {
-			map: null,
+		this.baseState = {
 			coords: {
 				lat: '21.0245',
 				lng: '105.84117'
@@ -42,6 +41,7 @@ export class Dashboard extends Component {
 			},
 			login: null
 		}
+		this.state = this.baseState;
 		this.onMapCreated = this.onMapCreated.bind(this);
 		this.filterAddress = this.filterAddress.bind(this);
 		this.filter = this.filter.bind(this);
@@ -73,6 +73,7 @@ export class Dashboard extends Component {
 					this.getUserInfo(user.email);
 				} else {
 					this.setState({
+						...this.baseState,
 						login: false
 					});
 				};
