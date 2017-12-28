@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as configs from '../utility/configs';
 
 export const login = (params) => {
 	return{
@@ -10,6 +11,6 @@ export const login = (params) => {
 export const addInfo = (params) => {
 	return {
 		type: 'ADD_INFORMATION',
-		payload: axios.post('https://blood-donor-api.herokuapp.com/blood/add', params)
+		payload: axios.post(configs.API_URI + '/blood/add', params)
 	}
 }
