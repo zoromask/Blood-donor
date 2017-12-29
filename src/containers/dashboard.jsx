@@ -10,6 +10,8 @@ import axios from 'axios';
 import fire from '../utility/firebase';
 import firebase from 'firebase';
 import querystring from 'query-string';
+import * as configs from '../utility/configs';
+
 
 import * as images from '../images/image';
 
@@ -18,8 +20,7 @@ import * as Helpers from '../utility/helper';
 export class Dashboard extends Component {
 	constructor(props, context) {
 		super(props, context);
-		this.state = {
-			map: null,
+		this.baseState = {
 			coords: {
 				lat: '21.0245',
 				lng: '105.84117'
@@ -40,6 +41,7 @@ export class Dashboard extends Component {
 			},
 			login: null
 		}
+		this.state = this.baseState;
 		this.onMapCreated = this.onMapCreated.bind(this);
 		this.filterAddress = this.filterAddress.bind(this);
 		this.filter = this.filter.bind(this);
@@ -71,6 +73,7 @@ export class Dashboard extends Component {
 					this.getUserInfo(user.email);
 				} else {
 					this.setState({
+						...this.baseState,
 						login: false
 					});
 				};
@@ -169,7 +172,7 @@ export class Dashboard extends Component {
 	filter(data) {	//Unit: meter
 		var { coords, donors } = this.state;
 		var { caculateDestionationPoint } = Helpers;
-		axios.get('https://blood-donor-api.herokuapp.com/filter/blood', {
+		axios.get(configs.API_URI + '/filter/blood', {
 			params: {
 				bloodType: data.bloodType,
 				ageFrom: data.minAge,
@@ -198,7 +201,7 @@ export class Dashboard extends Component {
 
 	/** HANDLERS for INFORMATION TAB **/
 	getUserInfo(email) {
-		axios.get('https://blood-donor-api.herokuapp.com/filter/getbyemail?email=' + email)
+		axios.get(configs.API_URI + '/filter/getbyemail?email=' + email)
 			.then((res) => {
 				var blood = res.data.blood
 				if(blood.length) {
@@ -249,7 +252,7 @@ export class Dashboard extends Component {
 			delete params['location'];
 		} else {
 			if(data.address != '') {
-				await axios.get('http://maps.googleapis.com/maps/api/geocode/json?address=' + data.address)
+				await axios.get(configs.API_GOOGLE_URI + '/maps/api/geocode/json?address=' + data.address)
 					.then((res) => {
 						var { results } = res.data;
 						if (results[0]) {
@@ -270,7 +273,7 @@ export class Dashboard extends Component {
 		}
 
 		if(params) {
-			var url = (!currentUser.info) ? 'https://blood-donor-api.herokuapp.com/blood/add' : 'https://blood-donor-api.herokuapp.com/blood/update/' + currentUser.info._id;
+			var url = (!currentUser.info) ? configs.API_URI + '/blood/add' : configs.API_URI + '/blood/update/' + currentUser.info._id;
 			var action = (!currentUser.info) ? axios.post : axios.put;
 			await action(url, querystring.stringify(params)).then((res) => {
 				if(res.data.errmsg) {
