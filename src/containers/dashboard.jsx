@@ -39,7 +39,8 @@ export class Dashboard extends Component {
 				v: '3.exp',
 				key: 'AIzaSyC7-Y8Wp2q_4gYxOxgDFt5XSWbL_NNXjUI'
 			},
-			login: null
+			login: null,
+			filterData: null,
 		}
 		this.state = this.baseState;
 		this.onMapCreated = this.onMapCreated.bind(this);
@@ -106,6 +107,10 @@ export class Dashboard extends Component {
 			var markers = donors.map((donor) => {
 				return new google.maps.Marker({
 					map: map,
+					icon: {
+						url: images.blood,
+						anchor: new google.maps.Point(100, 120)
+					},
 					position: {lat: donor.latitude, lng: donor.longitude},
 					donor: donor	//insert donor information to marker ~ wow
 				})
@@ -166,30 +171,33 @@ export class Dashboard extends Component {
 				lat: location.lat(),
 				lng: location.lng()
 			}
+		}, () => {
+			this.filter(data);
 		});
-		this.filter(data);
 	}
 	filter(data) {	//Unit: meter
-		var { coords, donors } = this.state;
 		var { caculateDestionationPoint } = Helpers;
+		var currentCoords = this.state.coords; 
 		axios.get(configs.API_URI + '/filter/blood', {
 			params: {
 				bloodType: data.bloodType,
 				ageFrom: data.minAge,
 				ageTo: data.maxAge,
-				longitudeMin: caculateDestionationPoint(coords, -90, data.radius).lng,
-				longitudeMax: caculateDestionationPoint(coords, 90, data.radius).lng,
-				latitudeMin: caculateDestionationPoint(coords, -180, data.radius).lat,
-				latitudeMax: caculateDestionationPoint(coords, 0, data.radius).lat,
+				longitudeMin: caculateDestionationPoint(currentCoords, -90, data.radius).lng,
+				longitudeMax: caculateDestionationPoint(currentCoords, 90, data.radius).lng,
+				latitudeMin: caculateDestionationPoint(currentCoords, -180, data.radius).lat,
+				latitudeMax: caculateDestionationPoint(currentCoords, 0, data.radius).lat,
 			}
 		}).then((res) => {
 			if(res.data.blood.length) {
 				this.setState({
-					donors: res.data.blood
+					donors: res.data.blood,
+					filterData: data
 				})
 			} else {
 				this.setState({
-					donors: []
+					donors: [],
+					filterData: data
 				})
 			}
 			this.createMarkers();
@@ -200,8 +208,8 @@ export class Dashboard extends Component {
 	/** END **/
 
 	/** HANDLERS for INFORMATION TAB **/
-	getUserInfo(email) {
-		axios.get(configs.API_URI + '/filter/getbyemail?email=' + email)
+	async getUserInfo(email) {
+		await axios.get(configs.API_URI + '/filter/getbyemail?email=' + email)
 			.then((res) => {
 				var blood = res.data.blood
 				if(blood.length) {
@@ -227,9 +235,8 @@ export class Dashboard extends Component {
 							}
 						}
 					}, () => {
-						this.setState({
-							currentInfoWindow: this.state.currentUser.info
-						});
+						this.setState({ currentInfoWindow: this.state.currentUser.info });
+						if(this.state.filterData) { this.filter(this.state.filterData); }
 					});
 				} else {
 					//please add info
@@ -369,9 +376,13 @@ export class Dashboard extends Component {
 							onMapCreated={this.onMapCreated}
 							onZoomChanged={() => this.setState({showInfoWindow: false})}>
 							
-							<Marker
+							<Marker	//user
 								lat={(currentUser.info) ? currentUser.info.latitude : coords.lat}
 								lng={(currentUser.info) ? currentUser.info.longitude : coords.lng}
+								icon={{
+									url: images.marker,
+									anchor: new google.maps.Point(100, 120)
+								}}
 								draggable={false}
 								onDragEnd={this.onDragEnd}
 								onClick={() => this.openInfoWindow(this.state.currentUser.info)}/>
