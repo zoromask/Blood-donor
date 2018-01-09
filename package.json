@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "mongodb": "^3.0.0-rc0",
-    "mongoose": "^4.13.7"
+    "mongoose": "^4.13.7",
+    "redux-promise-middleware": "^5.0.0"
   }
 }

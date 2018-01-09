@@ -39,17 +39,18 @@ class InformationTab extends Component{
         })
     }
     setData() {
-        var {displayName, phoneNumber, info} = this.props.currentUser;
+        var {displayName, phoneNumber} = this.props.currentUser;
+        var {userInfo} = this.props;
         var data = null;
-        if(info) {
+        if(userInfo) {
             data = {
-                fullName: info.fullName ? info.fullName : (displayName ? displayName : ''),
-                address: info.address ? info.address : '',
-                phone: info.phone ? info.phone : (phoneNumber ? phoneNumber : ''),
-                age: info.age ? info.age : '',
-                bloodType: info.bloodType ? info.bloodType : 'A',
-                height: info.height ? info.height : 0,
-                weight: info.weight ? info.weight : 0,
+                fullName: userInfo.fullName ? userInfo.fullName : (displayName ? displayName : ''),
+                address: userInfo.address ? userInfo.address : '',
+                phone: userInfo.phone ? userInfo.phone : (phoneNumber ? phoneNumber : ''),
+                age: userInfo.age ? userInfo.age : '',
+                bloodType: userInfo.bloodType ? userInfo.bloodType : 'A',
+                height: userInfo.height ? userInfo.height : 0,
+                weight: userInfo.weight ? userInfo.weight : 0,
             }
         } else {
             data = {

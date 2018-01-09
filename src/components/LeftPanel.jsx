@@ -7,8 +7,9 @@ import FilterTab from './FilterTab.jsx';
 import InfoTab from './SignupTab.jsx'
 
 const LeftPanel = (props) => {
-	const {isLoggedIn, user, filterAddress, filter, login,
-			searchArea, map, currentUser, editDonorInformation} = props
+	const {isLoggedIn, user, userInfo, filterAddress, filter, login,
+			searchArea, map, currentUser, editDonorInformation} = props;
+	const {actions} = props;
 	if (isLoggedIn === null) {
 		return (
 			<div className="load-wrapp">
@@ -38,6 +39,7 @@ const LeftPanel = (props) => {
 					<InformationTab 
 						map = {map}
 						currentUser={currentUser}
+						userInfo={userInfo}
 						editDonorInformation={editDonorInformation}
 					/>
 				</Tab>
@@ -46,7 +48,7 @@ const LeftPanel = (props) => {
 	}
 	else {
 		return  (
-			<InfoTab login={login} isLoggedIn={isLoggedIn}/>
+			<InfoTab login={actions.login} isLoggedIn={isLoggedIn}/>
 		)
 	}
 }
