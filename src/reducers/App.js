@@ -1,13 +1,13 @@
 const initialState = {
 	userInfo: null,
-	list: null
+	donors: null
 }
 export default (state = initialState, action = {}) =>{
 	switch(action.type){
 		case 'FILTER_DONORS_FULFILLED':
 			return {
 				...state,
-				list: action.payload.data.blood
+				donors: action.payload.data.blood
 			}
 			break;
 		case 'GET_USER_BY_EMAIL_FULFILLED':

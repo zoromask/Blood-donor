@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import {isLogin} from '../actions'
-import App from '../components/app.jsx'
+import App from '../components/App.jsx'
 
 const AppContainer = props => <App {...props}/>
 const mapStateToProps = (state) => {

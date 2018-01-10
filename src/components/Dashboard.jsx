@@ -20,17 +20,12 @@ class Dashboard extends Component {
 			},
 			markers: null,
 			markersCluster: null,
-			currentUser: {
-				displayName: '',
-				email: ''
-			},
 			currentInfoWindow: null,
 			showInfoWindow: false,
 			mapKey: {
 				v: '3.exp',
 				key: 'AIzaSyC7-Y8Wp2q_4gYxOxgDFt5XSWbL_NNXjUI'
 			},
-			login: null,
 			filterData: null,
 		}
 		this.state = this.baseState;
@@ -54,19 +49,10 @@ class Dashboard extends Component {
 		setTimeout(() => {
 			const {user, isLoggedIn} = this.props;
 			if(isLoggedIn && user) {
-				this.setState({
-					login: true,
-					currentUser: {
-						...this.state.currentUser,
-						displayName: user.displayName,
-						email: user.email
-					}
-				});
 				this.getUserInfo(user.email);
 			} else {
 				this.setState({
-					...this.baseState,
-					login: false
+					...this.baseState
 				});
 			}
 		}, 1000);
@@ -78,11 +64,9 @@ class Dashboard extends Component {
 		map.setOptions({ disableDefaultUI: true });
 		this.setState({ map: map });
 	}
-	onDragEnd(e) {
-		console.log('onDragEnd', e);
-	}
 	openInfoWindow(donor) {
 		this.setState({
+			...this.state,
 			currentInfoWindow: donor,
 			showInfoWindow: true
 		});
@@ -90,10 +74,9 @@ class Dashboard extends Component {
 	createMarkers() {
 		// remove old markers
 		this.deleteMarkers();
-
 		// create new markers
         var {map} = this.state;
-        var {donors} = this.props;
+		var {donors} = this.props;
 		if(donors && donors.length) {
 			var markers = donors.map((donor) => {
 				return new google.maps.Marker({
@@ -194,15 +177,12 @@ class Dashboard extends Component {
 		const { actions } = this.props;
 		await actions.getUserByEmail(email);
 		const { userInfo } = this.props;
-		if(userInfo && userInfo.length) {
+		if(userInfo) {
 			//Render existing info
 			this.setState({
 				coords: {
-					lat: userInfolatitude,
-					lng: userInfolongitude
-				},
-				currentUser: {
-					...this.state.currentUser,
+					lat: userInfo.latitude,
+					lng: userInfo.longitude
 				}
 			}, () => {
 				this.setState({ currentInfoWindow: userInfo });
@@ -215,11 +195,11 @@ class Dashboard extends Component {
 		const { actions, userInfo } = this.props;
 		var params = null;
 		var error = 0;
-		var {currentUser} = this.state;
+		var {user} = this.props;
 		if(data.location) {
 			params = {
 				...data,
-				email: currentUser.email,
+				email: user.email,
 				latitude: data.location.lat(),
 				longitude: data.location.lng()
 			}
@@ -231,7 +211,7 @@ class Dashboard extends Component {
 						if (results[0]) {
 							params = {
 								...data,
-								email: currentUser.email,
+								email: user.email,
 								latitude: results[0].geometry.location.lat,
 								longitude: results[0].geometry.location.lng 
 							}
@@ -248,10 +228,10 @@ class Dashboard extends Component {
 		if(params) {	//UPDATE_INFORMATION //ADD_INFORMATION
 			var action = (!userInfo) ? actions.addInfo : actions.updateInfo;
 			await action(userInfo._id, params).then((res) => {
-				if(res.value.data.errmsg) {
-					error = res.value.data.errmsg;
+				if(res.value.data.error_message) {
+					error = res.value.data.error_message;
 				}
-				this.getUserInfo(currentUser.email);
+				this.getUserInfo(user.email);
 				this.setState({
 					showInfoWindow: true
 				});
@@ -267,21 +247,19 @@ class Dashboard extends Component {
 	}
 
 	render() {
-		var {coords, currentUser, currentInfoWindow, showInfoWindow, radius} = this.state;
-        var { userInfo } = this.props;
+		var {coords, currentInfoWindow, showInfoWindow, radius} = this.state;
+		var { userInfo, user } = this.props;
         return (
 			<div className="dashboard-container">
-				
 				<div className="left-panel">
 					<LeftPanel {...this.props}
 						map = {this.state.map}
 						searchArea = {this.state.searchArea}
 						filterAddress={this.filterAddress}
 						filter={this.filter}
-						currentUser={this.state.currentUser}
+						currentUser={user}
 						userInfo={userInfo}
-						editDonorInformation={this.editDonorInformation}
-					/>
+						editDonorInformation={this.editDonorInformation}/>
 				</div>
 				<div className="right-panel">
 					{coords ?
@@ -305,8 +283,7 @@ class Dashboard extends Component {
 									anchor: new google.maps.Point(100, 120)
 								}}
 								draggable={false}
-								onDragEnd={this.onDragEnd}
-								onClick={() => this.openInfoWindow(userInfo)}/>
+								onClick={() => this.openInfoWindow(this.props.userInfo)}/>
 
 							{showInfoWindow && currentInfoWindow ?
 								<InfoWindow

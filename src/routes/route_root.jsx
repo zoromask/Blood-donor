@@ -34,7 +34,7 @@ const routes = [
 				path: '/',
 				exact: true,
 				component: asyncComponent(
-					() => System.import('../containers/dashboard.jsx').then(module => module.default),
+					() => System.import('../containers/Dashboard.jsx').then(module => module.default),
 					{ name: 'index' }
 				)
 			}
